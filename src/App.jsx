@@ -7,6 +7,7 @@ import ProblemView from './components/ProblemView'
 import MockTest from './components/MockTest'
 import Analytics from './components/Analytics'
 import PythonCourse from './components/PythonCourse'
+import PythonLesson from './components/PythonLesson'
 import Resources from './components/Resources'
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
             <Route path="/mock-test" element={<MockTest />} />
             <Route path="/analytics" element={<Analytics />} />
             <Route path="/python-course" element={<PythonCourse />} />
+            <Route path="/python-course/lesson/:id" element={<PythonLesson />} />
             <Route path="/resources" element={<Resources />} />
           </Routes>
         </main>
