@@ -11,6 +11,7 @@ import PythonLesson from './components/PythonLesson'
 import Resources from './components/Resources'
 import CodeTemplates from './components/CodeTemplates'
 import CommonPitfalls from './components/CommonPitfalls'
+import PatternQuiz from './components/PatternQuiz'
 
 function App() {
   const [darkMode, setDarkMode] = useState(true)
@@ -32,6 +33,7 @@ function App() {
             <Route path="/resources" element={<Resources />} />
             <Route path="/templates" element={<CodeTemplates />} />
             <Route path="/pitfalls" element={<CommonPitfalls />} />
+            <Route path="/pattern-quiz" element={<PatternQuiz />} />
           </Routes>
         </main>
       </div>

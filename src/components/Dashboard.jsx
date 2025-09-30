@@ -221,6 +221,12 @@ export default function Dashboard() {
           <p className="text-yellow-100 mb-2 text-sm">Test format, tips & strategies</p>
           <div className="text-sm opacity-90">Read report →</div>
         </Link>
+
+        <Link to="/pattern-quiz" className="card-hover bg-gradient-to-br from-pink-500 to-pink-600 text-white">
+          <h3 className="text-xl font-bold mb-2">Pattern Quiz</h3>
+          <p className="text-pink-100 mb-2 text-sm">Test your pattern recognition speed</p>
+          <div className="text-sm opacity-90">Take quiz →</div>
+        </Link>
       </div>
 
       {/* Recent Activity */}
