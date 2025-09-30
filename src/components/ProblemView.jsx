@@ -45,7 +45,7 @@ export default function ProblemView() {
     // Run tests against actual code execution
     const results = []
 
-    for (let idx = 0; idx < Math.min(3, problem.testCases.length); idx++) {
+    for (let idx = 0; idx < problem.testCases.length; idx++) {
       const testCase = problem.testCases[idx]
       let passed = false
       let actualOutput = null
