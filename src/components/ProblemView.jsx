@@ -41,35 +41,87 @@ export default function ProblemView() {
     }
   }
 
-  const runTests = async (code) => {
-    // Mock test runner - in production, this would execute against test cases
-    const results = problem.testCases.slice(0, 3).map((testCase, idx) => ({
-      index: idx,
-      input: testCase.input,
-      expected: testCase.output,
-      passed: Math.random() > 0.3, // Mock result
-    }))
+  const runTests = async (code, pyodide) => {
+    // Run tests against actual code execution
+    const results = []
+
+    for (let idx = 0; idx < Math.min(3, problem.testCases.length); idx++) {
+      const testCase = problem.testCases[idx]
+      let passed = false
+      let actualOutput = null
+
+      try {
+        // Extract function name from code (assumes def function_name(...))
+        const funcMatch = code.match(/def\s+(\w+)\s*\(/)
+        if (!funcMatch) {
+          results.push({
+            index: idx,
+            input: testCase.input,
+            expected: testCase.output,
+            actual: 'Error: No function definition found',
+            passed: false
+          })
+          continue
+        }
+
+        const funcName = funcMatch[1]
+
+        // Execute code with test input
+        await pyodide.runPythonAsync(code)
+
+        // Call function with test input and capture output
+        const inputStr = JSON.stringify(testCase.input)
+        const result = await pyodide.runPythonAsync(`
+import json
+result = ${funcName}(*json.loads('${inputStr}'))
+json.dumps(result)
+        `)
+
+        actualOutput = JSON.parse(result)
+
+        // Deep comparison
+        passed = JSON.stringify(actualOutput) === JSON.stringify(testCase.output)
+
+        results.push({
+          index: idx,
+          input: testCase.input,
+          expected: testCase.output,
+          actual: actualOutput,
+          passed
+        })
+      } catch (error) {
+        results.push({
+          index: idx,
+          input: testCase.input,
+          expected: testCase.output,
+          actual: `Error: ${error.message}`,
+          passed: false
+        })
+      }
+    }
+
     setTestResults(results)
+    return results
   }
 
-  const handleSubmit = async (code) => {
-    await runTests(code)
+  const handleSubmit = async (code, pyodide) => {
+    const results = await runTests(code, pyodide)
 
     // Save submission to database
-    const passed = testResults.every(r => r.passed)
+    const passed = results.every(r => r.passed)
     await db.submissions.add({
       problemId: problem.id,
       code,
       language: 'python',
       timestamp: new Date(),
       passed,
-      score: passed ? 100 : (testResults.filter(r => r.passed).length / testResults.length) * 100
+      score: passed ? 100 : (results.filter(r => r.passed).length / results.length) * 100
     })
 
     if (passed) {
       alert('✓ All test cases passed! Great job!')
     } else {
-      alert(`${testResults.filter(r => r.passed).length}/${testResults.length} test cases passed. Keep trying!`)
+      alert(`${results.filter(r => r.passed).length}/${results.length} test cases passed. Keep trying!`)
     }
   }
 
@@ -166,6 +218,13 @@ export default function ProblemView() {
                       <div className="text-sm font-mono">
                         Expected: {JSON.stringify(result.expected)}
                       </div>
+                      {result.actual !== undefined && (
+                        <div className="text-sm font-mono">
+                          Actual: {typeof result.actual === 'string' && result.actual.startsWith('Error:')
+                            ? <span className="text-red-500">{result.actual}</span>
+                            : JSON.stringify(result.actual)}
+                        </div>
+                      )}
                     </div>
                   ))}
                 </div>

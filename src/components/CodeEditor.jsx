@@ -86,7 +86,7 @@ sys.stderr = StringIO()
         setOutput('✓ Code executed successfully (no output)')
       }
 
-      onRun?.({ success: !stderr, output: stdout, time: execTime })
+      onRun?.(code, pyodideRef.current, { success: !stderr, output: stdout, time: execTime })
     } catch (error) {
       setOutput(`Error: ${error.message}`)
       setExecutionTime(null)
@@ -96,8 +96,8 @@ sys.stderr = StringIO()
   }
 
   const handleSubmit = async () => {
-    await runCode()
-    onSubmit?.(code)
+    if (!pyodideRef.current || isRunning) return
+    onSubmit?.(code, pyodideRef.current)
   }
 
   const resetCode = () => {
