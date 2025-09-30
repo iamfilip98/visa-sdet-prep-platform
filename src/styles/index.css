@@ -1,0 +1,237 @@
+@import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;500;700&display=swap');
+
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  html {
+    @apply bg-white dark:bg-gray-900 text-gray-900 dark:text-gray-100;
+  }
+
+  body {
+    @apply font-sans antialiased;
+  }
+
+  h1 {
+    @apply text-3xl font-bold;
+  }
+
+  h2 {
+    @apply text-2xl font-semibold;
+  }
+
+  h3 {
+    @apply text-xl font-semibold;
+  }
+}
+
+@layer components {
+  /* Visa brand colors */
+  .visa-blue {
+    @apply bg-[#1434CB] text-white;
+  }
+
+  .visa-gold {
+    @apply bg-[#F7B600] text-gray-900;
+  }
+
+  /* Difficulty badges */
+  .badge-easy {
+    @apply bg-green-100 text-green-800 dark:bg-green-900 dark:text-green-200 px-2 py-1 rounded text-sm font-medium;
+  }
+
+  .badge-medium {
+    @apply bg-yellow-100 text-yellow-800 dark:bg-yellow-900 dark:text-yellow-200 px-2 py-1 rounded text-sm font-medium;
+  }
+
+  .badge-hard {
+    @apply bg-red-100 text-red-800 dark:bg-red-900 dark:text-red-200 px-2 py-1 rounded text-sm font-medium;
+  }
+
+  /* Frequency badges */
+  .freq-very-high {
+    @apply bg-red-500 text-white;
+  }
+
+  .freq-high {
+    @apply bg-orange-500 text-white;
+  }
+
+  .freq-medium {
+    @apply bg-yellow-500 text-gray-900;
+  }
+
+  .freq-low {
+    @apply bg-gray-500 text-white;
+  }
+
+  /* Button styles */
+  .btn-primary {
+    @apply bg-blue-600 hover:bg-blue-700 text-white font-medium py-2 px-4 rounded transition-colors;
+  }
+
+  .btn-secondary {
+    @apply bg-gray-200 hover:bg-gray-300 dark:bg-gray-700 dark:hover:bg-gray-600 text-gray-900 dark:text-gray-100 font-medium py-2 px-4 rounded transition-colors;
+  }
+
+  .btn-success {
+    @apply bg-green-600 hover:bg-green-700 text-white font-medium py-2 px-4 rounded transition-colors;
+  }
+
+  .btn-danger {
+    @apply bg-red-600 hover:bg-red-700 text-white font-medium py-2 px-4 rounded transition-colors;
+  }
+
+  /* Card styles */
+  .card {
+    @apply bg-white dark:bg-gray-800 rounded-lg shadow-md p-6 border border-gray-200 dark:border-gray-700;
+  }
+
+  .card-hover {
+    @apply card hover:shadow-lg transition-shadow cursor-pointer;
+  }
+
+  /* Code block styles */
+  .code-block {
+    @apply bg-gray-900 text-green-400 font-mono text-sm p-4 rounded overflow-x-auto;
+  }
+
+  /* Progress bar */
+  .progress-bar {
+    @apply w-full bg-gray-200 dark:bg-gray-700 rounded-full h-2.5;
+  }
+
+  .progress-fill {
+    @apply bg-blue-600 h-2.5 rounded-full transition-all duration-300;
+  }
+
+  /* Timer styles */
+  .timer {
+    @apply font-mono text-2xl font-bold;
+  }
+
+  .timer-warning {
+    @apply text-yellow-500 animate-pulse;
+  }
+
+  .timer-danger {
+    @apply text-red-500 animate-pulse;
+  }
+
+  /* Split view layout */
+  .split-view {
+    @apply grid grid-cols-1 lg:grid-cols-2 gap-4 h-full;
+  }
+
+  /* Sidebar */
+  .sidebar {
+    @apply fixed left-0 top-0 h-full w-64 bg-white dark:bg-gray-800 border-r border-gray-200 dark:border-gray-700 overflow-y-auto;
+  }
+
+  .sidebar-item {
+    @apply flex items-center gap-3 px-4 py-3 hover:bg-gray-100 dark:hover:bg-gray-700 cursor-pointer transition-colors;
+  }
+
+  .sidebar-item-active {
+    @apply sidebar-item bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-medium;
+  }
+
+  /* Test case styles */
+  .test-case-pass {
+    @apply bg-green-50 dark:bg-green-900/20 border-l-4 border-green-500 p-4 rounded;
+  }
+
+  .test-case-fail {
+    @apply bg-red-50 dark:bg-red-900/20 border-l-4 border-red-500 p-4 rounded;
+  }
+
+  /* Hint styles */
+  .hint-locked {
+    @apply bg-gray-100 dark:bg-gray-800 border-2 border-dashed border-gray-300 dark:border-gray-600 p-4 rounded text-center cursor-pointer hover:bg-gray-200 dark:hover:bg-gray-700;
+  }
+
+  .hint-revealed {
+    @apply bg-blue-50 dark:bg-blue-900/20 border-l-4 border-blue-500 p-4 rounded;
+  }
+
+  /* Streak counter */
+  .streak-badge {
+    @apply inline-flex items-center gap-1 bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-full font-semibold;
+  }
+
+  /* Loading spinner */
+  .spinner {
+    @apply inline-block w-6 h-6 border-4 border-gray-300 border-t-blue-600 rounded-full animate-spin;
+  }
+
+  /* Toast notifications */
+  .toast {
+    @apply fixed bottom-4 right-4 bg-white dark:bg-gray-800 shadow-lg rounded-lg p-4 border border-gray-200 dark:border-gray-700 animate-slide-in;
+  }
+
+  .toast-success {
+    @apply toast border-l-4 border-green-500;
+  }
+
+  .toast-error {
+    @apply toast border-l-4 border-red-500;
+  }
+
+  .toast-info {
+    @apply toast border-l-4 border-blue-500;
+  }
+}
+
+@layer utilities {
+  /* Custom animations */
+  @keyframes slide-in {
+    from {
+      transform: translateX(100%);
+      opacity: 0;
+    }
+    to {
+      transform: translateX(0);
+      opacity: 1;
+    }
+  }
+
+  .animate-slide-in {
+    animation: slide-in 0.3s ease-out;
+  }
+
+  /* Text truncation */
+  .truncate-2-lines {
+    display: -webkit-box;
+    -webkit-line-clamp: 2;
+    -webkit-box-orient: vertical;
+    overflow: hidden;
+  }
+
+  /* Scrollbar styling */
+  .scrollbar-thin::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-track {
+    @apply bg-gray-100 dark:bg-gray-800;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb {
+    @apply bg-gray-300 dark:bg-gray-600 rounded;
+  }
+
+  .scrollbar-thin::-webkit-scrollbar-thumb:hover {
+    @apply bg-gray-400 dark:bg-gray-500;
+  }
+
+  /* Focus styles */
+  .focus-ring {
+    @apply focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2;
+  }
+}
+
+.font-mono {
+  font-family: 'JetBrains Mono', 'Fira Code', monospace;
+}
