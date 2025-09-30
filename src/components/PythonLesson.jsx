@@ -1332,6 +1332,1534 @@ print(two_sum_exists(nums, 9))  # True`
           content: 'Use sets for O(1) membership testing, removing duplicates, and finding common/unique elements. For problems checking "does X exist in list", always convert to set first!'
         }
       ]
+    },
+    9: {
+      title: 'Two Pointers Pattern',
+      description: 'Master the technique that solves 40% of array problems',
+      content: [
+        {
+          type: 'text',
+          content: 'The two pointers pattern is one of the most common techniques in coding interviews. It allows you to solve problems that would normally require nested loops (O(n²)) in linear time (O(n)).'
+        },
+        {
+          type: 'section',
+          title: 'What is Two Pointers?',
+          content: 'Use two index variables to traverse the data structure from different ends or at different speeds.'
+        },
+        {
+          type: 'code',
+          code: `# Pattern 1: Opposite Ends (Converging)
+# Use when: Array is sorted or you need to find pairs
+
+def two_sum_sorted(arr, target):
+    """Find two numbers that sum to target in sorted array."""
+    left = 0
+    right = len(arr) - 1
+
+    while left < right:
+        current_sum = arr[left] + arr[right]
+
+        if current_sum == target:
+            return [left, right]
+        elif current_sum < target:
+            left += 1  # Need larger sum
+        else:
+            right -= 1  # Need smaller sum
+
+    return None
+
+# Example
+arr = [1, 2, 3, 4, 6]
+print(two_sum_sorted(arr, 6))  # [1, 3] (2 + 4 = 6)
+
+# Without two pointers: O(n²)
+# With two pointers: O(n)`
+        },
+        {
+          type: 'section',
+          title: 'Fast and Slow Pointers',
+          content: 'One pointer moves faster than the other. Used for cycle detection and finding middle elements.'
+        },
+        {
+          type: 'code',
+          code: `# Pattern 2: Fast and Slow (Floyd's Algorithm)
+# Use when: Finding cycles or middle element
+
+def has_cycle(head):
+    """Detect cycle in linked list."""
+    slow = fast = head
+
+    while fast and fast.next:
+        slow = slow.next          # Move 1 step
+        fast = fast.next.next     # Move 2 steps
+
+        if slow == fast:
+            return True  # Cycle detected
+
+    return False
+
+# Find middle of linked list
+def find_middle(head):
+    """Find middle node of linked list."""
+    slow = fast = head
+
+    while fast and fast.next:
+        slow = slow.next
+        fast = fast.next.next
+
+    return slow  # Slow is at middle when fast reaches end`
+        },
+        {
+          type: 'section',
+          title: 'Remove Duplicates Pattern',
+          content: 'Use two pointers to modify array in-place.'
+        },
+        {
+          type: 'code',
+          code: `# Pattern 3: In-Place Modification
+# Use when: Need to remove/rearrange elements in-place
+
+def remove_duplicates(nums):
+    """
+    Remove duplicates from sorted array in-place.
+    Returns new length.
+    """
+    if not nums:
+        return 0
+
+    # slow: position to place next unique element
+    # fast: scanning for next unique element
+    slow = 0
+
+    for fast in range(1, len(nums)):
+        if nums[fast] != nums[slow]:
+            slow += 1
+            nums[slow] = nums[fast]
+
+    return slow + 1
+
+# Example
+nums = [1, 1, 2, 2, 3, 4, 4]
+length = remove_duplicates(nums)
+print(nums[:length])  # [1, 2, 3, 4]
+
+# Move zeros to end
+def move_zeros(nums):
+    """Move all 0s to end while maintaining order."""
+    slow = 0  # Position for next non-zero
+
+    for fast in range(len(nums)):
+        if nums[fast] != 0:
+            nums[slow], nums[fast] = nums[fast], nums[slow]
+            slow += 1
+
+    return nums
+
+nums = [0, 1, 0, 3, 12]
+print(move_zeros(nums))  # [1, 3, 12, 0, 0]`
+        },
+        {
+          type: 'section',
+          title: 'Common Two Pointer Problems',
+          content: 'Recognize these patterns to apply two pointers immediately.'
+        },
+        {
+          type: 'code',
+          code: `# Container With Most Water
+def max_area(height):
+    """Find max water container can hold."""
+    left, right = 0, len(height) - 1
+    max_water = 0
+
+    while left < right:
+        width = right - left
+        h = min(height[left], height[right])
+        max_water = max(max_water, width * h)
+
+        # Move pointer with smaller height
+        if height[left] < height[right]:
+            left += 1
+        else:
+            right -= 1
+
+    return max_water
+
+# Valid Palindrome
+def is_palindrome(s):
+    """Check if string is palindrome (ignore non-alphanumeric)."""
+    left, right = 0, len(s) - 1
+
+    while left < right:
+        # Skip non-alphanumeric
+        while left < right and not s[left].isalnum():
+            left += 1
+        while left < right and not s[right].isalnum():
+            right -= 1
+
+        if s[left].lower() != s[right].lower():
+            return False
+
+        left += 1
+        right -= 1
+
+    return True
+
+print(is_palindrome("A man, a plan, a canal: Panama"))  # True`
+        },
+        {
+          type: 'tip',
+          content: 'When you see "sorted array" or "find pairs", think two pointers! This pattern turns O(n²) solutions into O(n). Always consider: can I use one pointer from each end?'
+        }
+      ]
+    },
+    10: {
+      title: 'Sliding Window Pattern',
+      description: 'Optimize substring and subarray problems',
+      content: [
+        {
+          type: 'text',
+          content: 'Sliding window is essential for substring/subarray problems. Instead of recalculating from scratch for each window, you slide the window and update incrementally - turning O(n²) or O(n³) into O(n).'
+        },
+        {
+          type: 'section',
+          title: 'Fixed-Size Window',
+          content: 'Window size is constant. Use when problem specifies size k.'
+        },
+        {
+          type: 'code',
+          code: `# Fixed Window Template
+def max_sum_subarray(arr, k):
+    """
+    Find maximum sum of subarray of size k.
+    Example: arr=[1,2,3,4,5], k=3 → 12 (3+4+5)
+    """
+    if len(arr) < k:
+        return None
+
+    # Calculate sum of first window
+    window_sum = sum(arr[:k])
+    max_sum = window_sum
+
+    # Slide window: remove left, add right
+    for i in range(k, len(arr)):
+        window_sum = window_sum - arr[i-k] + arr[i]
+        max_sum = max(max_sum, window_sum)
+
+    return max_sum
+
+# Example
+arr = [1, 2, 3, 4, 5, 6]
+print(max_sum_subarray(arr, 3))  # 15 (4+5+6)
+
+# Average of subarrays of size K
+def find_averages(arr, k):
+    """Return array of averages for each window."""
+    result = []
+    window_sum = sum(arr[:k])
+    result.append(window_sum / k)
+
+    for i in range(k, len(arr)):
+        window_sum = window_sum - arr[i-k] + arr[i]
+        result.append(window_sum / k)
+
+    return result
+
+print(find_averages([1, 3, 2, 6, -1, 4, 1, 8, 2], 5))
+# [2.2, 2.8, 2.4, 3.6, 2.8]`
+        },
+        {
+          type: 'section',
+          title: 'Variable-Size Window',
+          content: 'Window size changes based on condition. Most common in interviews!'
+        },
+        {
+          type: 'code',
+          code: `# Variable Window Template
+def longest_substring_k_distinct(s, k):
+    """
+    Longest substring with at most k distinct characters.
+    Example: s="araaci", k=2 → 4 ("araa")
+    """
+    char_freq = {}
+    left = 0
+    max_length = 0
+
+    for right in range(len(s)):
+        # Expand window: add right char
+        right_char = s[right]
+        char_freq[right_char] = char_freq.get(right_char, 0) + 1
+
+        # Shrink window while invalid
+        while len(char_freq) > k:
+            left_char = s[left]
+            char_freq[left_char] -= 1
+            if char_freq[left_char] == 0:
+                del char_freq[left_char]
+            left += 1
+
+        # Update result
+        max_length = max(max_length, right - left + 1)
+
+    return max_length
+
+print(longest_substring_k_distinct("araaci", 2))  # 4
+print(longest_substring_k_distinct("cbbebi", 3))  # 5`
+        },
+        {
+          type: 'section',
+          title: 'Longest Substring Without Repeating',
+          content: 'Classic problem that appears frequently in assessments.'
+        },
+        {
+          type: 'code',
+          code: `def longest_unique_substring(s):
+    """
+    Length of longest substring without repeating characters.
+    Example: "abcabcbb" → 3 ("abc")
+    """
+    char_index = {}  # Last seen index of each char
+    left = 0
+    max_length = 0
+
+    for right in range(len(s)):
+        char = s[right]
+
+        # If char seen before and in current window
+        if char in char_index and char_index[char] >= left:
+            left = char_index[char] + 1  # Move left past duplicate
+
+        char_index[char] = right
+        max_length = max(max_length, right - left + 1)
+
+    return max_length
+
+# Examples
+print(longest_unique_substring("abcabcbb"))  # 3 ("abc")
+print(longest_unique_substring("bbbbb"))     # 1 ("b")
+print(longest_unique_substring("pwwkew"))    # 3 ("wke")`
+        },
+        {
+          type: 'section',
+          title: 'Minimum Window Substring',
+          content: 'Advanced sliding window - very common in Q3-Q4.'
+        },
+        {
+          type: 'code',
+          code: `def min_window_substring(s, t):
+    """
+    Find minimum window in s that contains all chars in t.
+    Example: s="ADOBECODEBANC", t="ABC" → "BANC"
+    """
+    if not s or not t:
+        return ""
+
+    # Count chars needed
+    target_count = {}
+    for char in t:
+        target_count[char] = target_count.get(char, 0) + 1
+
+    required = len(target_count)  # Unique chars needed
+    formed = 0  # Unique chars matched
+
+    window_counts = {}
+    left = 0
+    min_len = float('inf')
+    min_left = 0
+
+    for right in range(len(s)):
+        char = s[right]
+        window_counts[char] = window_counts.get(char, 0) + 1
+
+        # Check if this char completes a requirement
+        if char in target_count and window_counts[char] == target_count[char]:
+            formed += 1
+
+        # Try to shrink window while valid
+        while formed == required and left <= right:
+            # Update result
+            if right - left + 1 < min_len:
+                min_len = right - left + 1
+                min_left = left
+
+            # Remove left char
+            left_char = s[left]
+            window_counts[left_char] -= 1
+            if left_char in target_count and window_counts[left_char] < target_count[left_char]:
+                formed -= 1
+            left += 1
+
+    return s[min_left:min_left + min_len] if min_len != float('inf') else ""
+
+print(min_window_substring("ADOBECODEBANC", "ABC"))  # "BANC"`
+        },
+        {
+          type: 'tip',
+          content: 'Sliding window is THE pattern for substring/subarray problems. Key question: "Can I track what I need with a hash map as I slide?" If yes, this pattern saves you from O(n²)!'
+        }
+      ]
+    },
+    11: {
+      title: 'Hash Map Optimization',
+      description: 'THE MOST CRITICAL - 70% of Q4 requires this!',
+      content: [
+        {
+          type: 'text',
+          content: '🔥 THIS IS THE MOST IMPORTANT LESSON! 70% of Visa Q4 problems require hash map optimization. Master this and you\'ll pass Q4 every time. Hash maps turn O(n²) into O(n) by trading space for time.'
+        },
+        {
+          type: 'section',
+          title: 'Pattern 1: Complement Lookup',
+          content: 'Store what you need to find. The most common Q4 pattern!'
+        },
+        {
+          type: 'code',
+          code: `# Two Sum - THE CLASSIC
+def two_sum(nums, target):
+    """
+    Find indices of two numbers that sum to target.
+    Brute force: O(n²) - FAILS Q4
+    Hash map: O(n) - PASSES Q4
+    """
+    # Hash map: value → index
+    seen = {}
+
+    for i, num in enumerate(nums):
+        complement = target - num
+
+        if complement in seen:
+            return [seen[complement], i]
+
+        seen[num] = i
+
+    return None
+
+# Example
+nums = [2, 7, 11, 15]
+print(two_sum(nums, 9))  # [0, 1]
+
+# Three Sum (harder variation)
+def three_sum(nums):
+    """Find all unique triplets that sum to 0."""
+    nums.sort()
+    result = []
+
+    for i in range(len(nums) - 2):
+        # Skip duplicates
+        if i > 0 and nums[i] == nums[i-1]:
+            continue
+
+        # Two sum on remaining array
+        target = -nums[i]
+        seen = set()
+
+        for j in range(i + 1, len(nums)):
+            complement = target - nums[j]
+            if complement in seen:
+                result.append([nums[i], complement, nums[j]])
+                # Skip duplicates
+                while j + 1 < len(nums) and nums[j] == nums[j+1]:
+                    j += 1
+            seen.add(nums[j])
+
+    return result
+
+print(three_sum([-1, 0, 1, 2, -1, -4]))
+# [[-1, -1, 2], [-1, 0, 1]]`
+        },
+        {
+          type: 'section',
+          title: 'Pattern 2: Frequency Counting',
+          content: 'Use Counter or defaultdict to count occurrences efficiently.'
+        },
+        {
+          type: 'code',
+          code: `from collections import Counter, defaultdict
+
+# Count Pairs Summing to Power of 2 (ACTUAL VISA Q4!)
+def count_pairs_power_of_2(nums):
+    """
+    Count pairs (i,j) where nums[i] + nums[j] is power of 2.
+    Brute force: O(n²) - TIMEOUT
+    Hash map: O(n * 32) ≈ O(n) - PASSES
+    """
+    count = 0
+    freq = Counter(nums)
+    powers_of_2 = [2**i for i in range(32)]  # Up to 2^31
+
+    for num in nums:
+        for power in powers_of_2:
+            complement = power - num
+            if complement in freq:
+                if complement == num:
+                    count += freq[num] - 1  # Don't pair with self
+                else:
+                    count += freq[complement]
+
+    return count // 2  # Each pair counted twice
+
+# Group Anagrams
+def group_anagrams(words):
+    """Group words that are anagrams."""
+    groups = defaultdict(list)
+
+    for word in words:
+        # Use sorted string as key
+        key = ''.join(sorted(word))
+        groups[key].append(word)
+
+    return list(groups.values())
+
+words = ["eat", "tea", "tan", "ate", "nat", "bat"]
+print(group_anagrams(words))
+# [["eat", "tea", "ate"], ["tan", "nat"], ["bat"]]
+
+# First Unique Character
+def first_unique_char(s):
+    """Find index of first non-repeating character."""
+    freq = Counter(s)
+
+    for i, char in enumerate(s):
+        if freq[char] == 1:
+            return i
+
+    return -1
+
+print(first_unique_char("leetcode"))  # 0 ('l')
+print(first_unique_char("loveleetcode"))  # 2 ('v')`
+        },
+        {
+          type: 'section',
+          title: 'Pattern 3: Subarray Sum Problems',
+          content: 'Use prefix sums with hash map - extremely common in Q4!'
+        },
+        {
+          type: 'code',
+          code: `# Subarray Sum Equals K (FREQUENT Q4 PATTERN)
+def subarray_sum_k(nums, k):
+    """
+    Count subarrays with sum equal to k.
+    Key insight: prefix_sum[j] - prefix_sum[i] = k
+    → prefix_sum[i] = prefix_sum[j] - k
+    """
+    count = 0
+    prefix_sum = 0
+    prefix_counts = {0: 1}  # Handle sum from start
+
+    for num in nums:
+        prefix_sum += num
+
+        # Check if (prefix_sum - k) exists
+        if prefix_sum - k in prefix_counts:
+            count += prefix_counts[prefix_sum - k]
+
+        # Store current prefix sum
+        prefix_counts[prefix_sum] = prefix_counts.get(prefix_sum, 0) + 1
+
+    return count
+
+# Examples
+print(subarray_sum_k([1, 1, 1], 2))  # 2
+print(subarray_sum_k([1, 2, 3], 3))  # 2
+
+# Longest Subarray with Sum K
+def longest_subarray_sum_k(nums, k):
+    """Find length of longest subarray with sum k."""
+    prefix_sum = 0
+    prefix_indices = {0: -1}  # Handle from start
+    max_length = 0
+
+    for i, num in enumerate(nums):
+        prefix_sum += num
+
+        if prefix_sum - k in prefix_indices:
+            length = i - prefix_indices[prefix_sum - k]
+            max_length = max(max_length, length)
+
+        # Store first occurrence only (for longest)
+        if prefix_sum not in prefix_indices:
+            prefix_indices[prefix_sum] = i
+
+    return max_length
+
+print(longest_subarray_sum_k([1, -1, 5, -2, 3], 3))  # 4`
+        },
+        {
+          type: 'section',
+          title: 'Pattern 4: Index Mapping',
+          content: 'Store indices to find relationships quickly.'
+        },
+        {
+          type: 'code',
+          code: `# Contains Duplicate II
+def contains_nearby_duplicate(nums, k):
+    """
+    Check if duplicate exists within distance k.
+    nums[i] = nums[j] and |i - j| <= k
+    """
+    index_map = {}  # value → most recent index
+
+    for i, num in enumerate(nums):
+        if num in index_map and i - index_map[num] <= k:
+            return True
+        index_map[num] = i
+
+    return False
+
+# Longest Consecutive Sequence
+def longest_consecutive(nums):
+    """
+    Find longest consecutive sequence length.
+    Example: [100, 4, 200, 1, 3, 2] → 4 (1,2,3,4)
+    """
+    if not nums:
+        return 0
+
+    num_set = set(nums)
+    max_length = 0
+
+    for num in num_set:
+        # Only start counting if this is start of sequence
+        if num - 1 not in num_set:
+            current = num
+            length = 1
+
+            while current + 1 in num_set:
+                current += 1
+                length += 1
+
+            max_length = max(max_length, length)
+
+    return max_length
+
+print(longest_consecutive([100, 4, 200, 1, 3, 2]))  # 4`
+        },
+        {
+          type: 'section',
+          title: 'When to Use Hash Maps',
+          content: 'Decision flowchart for Q4 problems.'
+        },
+        {
+          type: 'code',
+          code: `"""
+HASH MAP DECISION TREE:
+
+Q: Need to find pairs/complements?
+   → Use complement lookup (two sum pattern)
+
+Q: Need to count occurrences?
+   → Use Counter or defaultdict(int)
+
+Q: Need to group by property?
+   → Use defaultdict(list)
+
+Q: Need to find sum of subarray/substring?
+   → Use prefix sum + hash map
+
+Q: Need to track indices/last occurrence?
+   → Use value → index mapping
+
+Q: Need O(1) lookup?
+   → Use set or dict
+
+Q: Nested loops iterating same array?
+   → Probably can optimize with hash map!
+
+ALWAYS ASK: "Am I doing O(n²)? Can hash map make it O(n)?"
+"""
+
+# Common mistakes to avoid:
+# ❌ DON'T: Nested loops for searching
+for i in range(len(nums)):
+    for j in range(i+1, len(nums)):  # O(n²)
+        if nums[i] + nums[j] == target:
+            return [i, j]
+
+# ✓ DO: Hash map for O(1) lookup
+seen = {}
+for i, num in enumerate(nums):  # O(n)
+    if target - num in seen:
+        return [seen[target - num], i]
+    seen[num] = i`
+        },
+        {
+          type: 'tip',
+          content: '🔥 MEMORIZE THIS: If you see nested loops iterating the same array, 90% of the time you can optimize with a hash map! This ONE insight will help you pass Q4. Always ask: "What am I looking for in the inner loop? Can I store it in a hash map?"'
+        }
+      ]
+    },
+    12: {
+      title: 'Edge Cases & Testing',
+      description: 'Catch the bugs before they fail hidden tests',
+      content: [
+        {
+          type: 'text',
+          content: 'Hidden test cases cause 50% of Q4 failures. Learn to identify edge cases systematically and you\'ll pass tests other candidates miss.'
+        },
+        {
+          type: 'section',
+          title: 'The Edge Case Checklist',
+          content: 'ALWAYS test these before submitting.'
+        },
+        {
+          type: 'code',
+          code: `"""
+UNIVERSAL EDGE CASE CHECKLIST:
+
+1. EMPTY INPUT
+   ✓ Empty array: []
+   ✓ Empty string: ""
+   ✓ None/null
+
+2. SINGLE ELEMENT
+   ✓ Array: [5]
+   ✓ String: "a"
+
+3. TWO ELEMENTS
+   ✓ Same: [1, 1]
+   ✓ Different: [1, 2]
+   ✓ Sorted/unsorted
+
+4. ALL SAME
+   ✓ [5, 5, 5, 5, 5]
+   ✓ "aaaaa"
+
+5. ALL DIFFERENT (NO DUPLICATES)
+   ✓ [1, 2, 3, 4, 5]
+
+6. EXTREME VALUES
+   ✓ Minimum: -2^31 for integers
+   ✓ Maximum: 2^31-1 for integers
+   ✓ Very large: 10^6 elements
+
+7. BOUNDARY CONDITIONS
+   ✓ First element
+   ✓ Last element
+   ✓ Off-by-one errors (< vs <=)
+
+8. NEGATIVE NUMBERS
+   ✓ All negative: [-5, -3, -1]
+   ✓ Mixed: [-1, 0, 1]
+
+9. ZEROS
+   ✓ All zeros: [0, 0, 0]
+   ✓ Contains zero: [1, 0, 2]
+
+10. SPECIAL CHARACTERS (strings)
+    ✓ Spaces: "  hello  "
+    ✓ Punctuation: "a,b,c"
+    ✓ Case sensitivity: "Aa"
+"""
+
+# Example: Two Sum with edge cases
+def two_sum(nums, target):
+    # Edge case 1: Empty or single element
+    if not nums or len(nums) < 2:
+        return None
+
+    seen = {}
+    for i, num in enumerate(nums):
+        complement = target - num
+        if complement in seen:
+            return [seen[complement], i]
+        seen[num] = i
+
+    return None
+
+# Test ALL edge cases:
+assert two_sum([], 5) == None  # Empty
+assert two_sum([5], 5) == None  # Single
+assert two_sum([1, 1], 2) == [0, 1]  # Duplicates
+assert two_sum([1, 2], 10) == None  # No solution
+assert two_sum([-1, -2, -3], -5) == [1, 2]  # Negatives
+assert two_sum([0, 4, 3, 0], 0) == [0, 3]  # Zeros`
+        },
+        {
+          type: 'section',
+          title: 'Array-Specific Edge Cases',
+          content: 'Additional cases for array problems.'
+        },
+        {
+          type: 'code',
+          code: `"""
+ARRAY EDGE CASES:
+
+1. Already sorted/reverse sorted
+2. Rotated sorted array
+3. All elements at boundaries
+4. Duplicates at start/end
+5. Array size = constraint limit
+"""
+
+def binary_search(arr, target):
+    # Edge cases
+    if not arr:
+        return -1
+
+    # Edge: Target smaller/larger than all
+    if target < arr[0] or target > arr[-1]:
+        return -1
+
+    left, right = 0, len(arr) - 1
+
+    while left <= right:  # <= not < (common bug!)
+        mid = (left + right) // 2
+
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+
+    return -1
+
+# Test edge cases
+assert binary_search([], 5) == -1  # Empty
+assert binary_search([1], 1) == 0  # Single match
+assert binary_search([1], 2) == -1  # Single no match
+assert binary_search([1, 2], 1) == 0  # First
+assert binary_search([1, 2], 2) == 1  # Last`
+        },
+        {
+          type: 'section',
+          title: 'String-Specific Edge Cases',
+          content: 'Watch out for these in string problems.'
+        },
+        {
+          type: 'code',
+          code: `"""
+STRING EDGE CASES:
+
+1. Empty string: ""
+2. Single character: "a"
+3. All spaces: "   "
+4. Leading/trailing spaces: "  hello  "
+5. Case sensitivity: "AaBb"
+6. Special characters: "hello!"
+7. Unicode/emojis (rare but possible)
+"""
+
+def is_palindrome(s):
+    # Edge case: empty or single char
+    if len(s) <= 1:
+        return True
+
+    # Clean: alphanumeric only, lowercase
+    clean = ''.join(c.lower() for c in s if c.isalnum())
+
+    # Edge case: all spaces/special chars
+    if not clean:
+        return True
+
+    return clean == clean[::-1]
+
+# Test edge cases
+assert is_palindrome("") == True  # Empty
+assert is_palindrome("a") == True  # Single
+assert is_palindrome("   ") == True  # Spaces only
+assert is_palindrome("A man, a plan, a canal: Panama") == True
+assert is_palindrome("race a car") == False`
+        },
+        {
+          type: 'section',
+          title: 'Off-By-One Errors',
+          content: 'The most common bug in interviews!'
+        },
+        {
+          type: 'code',
+          code: `"""
+OFF-BY-ONE CHECKLIST:
+
+Loop conditions:
+❌ for i in range(len(arr) - 1):  # Misses last element
+✓ for i in range(len(arr)):
+
+Array access:
+❌ arr[i+1]  # Without checking i < len(arr) - 1
+✓ if i < len(arr) - 1: arr[i+1]
+
+While loops:
+❌ while left < right:  # Might miss element
+✓ while left <= right:  # Usually correct for search
+
+Substring:
+❌ s[start:end]  # Remember: end is EXCLUSIVE
+✓ s[start:end+1]  # If you want inclusive
+
+Window size:
+❌ right - left  # Off by one!
+✓ right - left + 1  # Correct window size
+"""
+
+# Common mistake: Missing last element
+def sum_array(arr):
+    total = 0
+    # ❌ WRONG: Misses last element
+    # for i in range(len(arr) - 1):
+
+    # ✓ CORRECT
+    for i in range(len(arr)):
+        total += arr[i]
+    return total
+
+# Common mistake: Array bounds
+def get_neighbors(arr, i):
+    # ❌ WRONG: Index out of bounds
+    # return arr[i-1] + arr[i+1]
+
+    # ✓ CORRECT: Check bounds
+    left = arr[i-1] if i > 0 else 0
+    right = arr[i+1] if i < len(arr) - 1 else 0
+    return left + right`
+        },
+        {
+          type: 'section',
+          title: 'Testing Strategy',
+          content: 'How to test efficiently during the exam.'
+        },
+        {
+          type: 'code',
+          code: `"""
+TESTING WORKFLOW (Spend 2 minutes on this!):
+
+1. Run provided examples
+2. Add edge case tests:
+   - Empty input
+   - Single element
+   - All same values
+3. Trace through code mentally
+4. Look for:
+   - Array bounds
+   - Division by zero
+   - Null/None checks
+5. Remove print statements!
+6. Submit
+
+DON'T spend 10 minutes testing everything.
+DO spend 2 minutes testing critical cases.
+"""
+
+def quick_test_framework(func, test_cases):
+    """Quick testing during interview."""
+    for i, (input_val, expected) in enumerate(test_cases):
+        result = func(input_val)
+        if result != expected:
+            print(f"❌ Test {i+1} failed: {input_val}")
+            print(f"   Expected: {expected}, Got: {result}")
+            return False
+    print("✓ All tests passed!")
+    return True
+
+# Use it:
+def my_solution(arr):
+    if not arr:
+        return []
+    # ... your code ...
+
+test_cases = [
+    ([], []),  # Empty
+    ([1], [1]),  # Single
+    ([1,2,3], [1,2,3]),  # Normal
+]
+quick_test_framework(my_solution, test_cases)`
+        },
+        {
+          type: 'tip',
+          content: '🎯 THE GOLDEN RULE: If your solution works on provided examples but fails hidden tests, it\'s 90% an edge case! Always test: empty, single element, all same, and boundaries. These 4 tests catch 80% of bugs!'
+        }
+      ]
+    },
+    13: {
+      title: 'Problem Solving Strategy',
+      description: 'Step-by-step approach to tackle any problem',
+      content: [
+        {
+          type: 'text',
+          content: 'Having a systematic approach is MORE important than knowing every algorithm. This 5-step strategy will guide you through any problem, even ones you\'ve never seen before.'
+        },
+        {
+          type: 'section',
+          title: 'The 5-Step Strategy',
+          content: 'Follow this for EVERY problem. Total time: 12-15 minutes for medium problems.'
+        },
+        {
+          type: 'code',
+          code: `"""
+5-STEP PROBLEM SOLVING STRATEGY:
+
+STEP 1: UNDERSTAND (2 min)
+- Read problem carefully
+- Identify inputs/outputs
+- Note constraints
+- Trace through examples
+
+STEP 2: PATTERN RECOGNITION (1 min)
+- Does it involve pairs/sums? → Hash map
+- Is array sorted? → Two pointers / Binary search
+- Substring/subarray problem? → Sliding window
+- Need to count/group? → Counter/defaultdict
+- Tree/graph? → BFS/DFS with deque
+
+STEP 3: BRUTE FORCE FIRST (2 min)
+- Think of simplest solution (even if O(n²))
+- Code it quickly if time allows
+- This gets you partial credit!
+
+STEP 4: OPTIMIZE (5 min)
+- Identify bottleneck (usually nested loop)
+- Apply pattern from Step 2
+- Can hash map eliminate inner loop?
+- Can two pointers replace search?
+
+STEP 5: TEST & SUBMIT (2 min)
+- Run provided examples
+- Test edge cases (empty, single, all same)
+- Remove print statements
+- SUBMIT! Don't over-polish
+"""
+
+# Let's apply this to a real problem:
+
+"""
+PROBLEM: Find if array has duplicate within distance k
+Input: nums = [1,2,3,1], k = 3
+Output: True (nums[0] = nums[3], |0-3| = 3 <= k)
+"""
+
+# STEP 1: UNDERSTAND
+# - Input: array of ints, distance k
+# - Output: boolean
+# - Constraint: duplicates within k indices
+# - Example: [1,2,3,1], k=3 → True (1 appears at 0 and 3)
+
+# STEP 2: PATTERN RECOGNITION
+# - Need to find duplicates → Hash map for tracking
+# - Need to track indices → Store index in hash map
+# - Within distance → Check index difference
+
+# STEP 3: BRUTE FORCE (O(n²))
+def contains_nearby_duplicate_brute(nums, k):
+    for i in range(len(nums)):
+        for j in range(i+1, min(i+k+1, len(nums))):
+            if nums[i] == nums[j]:
+                return True
+    return False
+
+# This works! Gets partial credit. But might timeout on large inputs.
+
+# STEP 4: OPTIMIZE (O(n) with hash map)
+def contains_nearby_duplicate_optimized(nums, k):
+    seen = {}  # value → most recent index
+
+    for i, num in enumerate(nums):
+        if num in seen and i - seen[num] <= k:
+            return True
+        seen[num] = i
+
+    return True
+
+# Bottleneck was inner loop checking all j.
+# Hash map eliminates it: O(1) lookup!
+
+# STEP 5: TEST
+test_cases = [
+    ([1,2,3,1], 3, True),  # Provided example
+    ([1,0,1,1], 1, True),  # Provided example
+    ([], 1, False),  # Edge: empty
+    ([1], 1, False),  # Edge: single
+    ([1,2,3,4], 2, False),  # No duplicates
+]
+
+for nums, k, expected in test_cases:
+    result = contains_nearby_duplicate_optimized(nums, k)
+    assert result == expected, f"Failed on {nums}"
+
+print("✓ Ready to submit!")`
+        },
+        {
+          type: 'section',
+          title: 'Pattern Recognition Guide',
+          content: 'Quick decision tree for identifying the right approach.'
+        },
+        {
+          type: 'code',
+          code: `"""
+PATTERN RECOGNITION FLOWCHART:
+
+START: Read problem
+    ↓
+Q: Is array sorted?
+    YES → Consider: Two pointers, Binary search
+    NO → Continue
+    ↓
+Q: Need to find pairs/complements?
+    YES → Hash map (complement lookup)
+    NO → Continue
+    ↓
+Q: Substring or subarray problem?
+    YES → Sliding window
+    NO → Continue
+    ↓
+Q: Need to count/group things?
+    YES → Counter or defaultdict
+    NO → Continue
+    ↓
+Q: Tree or graph traversal?
+    YES → BFS (deque) or DFS (recursion)
+    NO → Continue
+    ↓
+Q: Need consecutive elements?
+    YES → Sliding window or two pointers
+    NO → Continue
+    ↓
+Q: Dynamic programming keywords? (max/min, ways to, optimal)
+    YES → DP (but rare in Visa Q1-Q3)
+    NO → Continue
+    ↓
+DEFAULT → Hash map usually helps!
+"""
+
+# Recognition examples:
+problems = {
+    "Find two numbers that sum to target":
+        "→ Hash map (complement lookup)",
+
+    "Longest substring without repeating chars":
+        "→ Sliding window + set",
+
+    "Find all anagrams in string":
+        "→ Sliding window + Counter",
+
+    "Valid parentheses":
+        "→ Stack",
+
+    "Level-order tree traversal":
+        "→ BFS with deque",
+
+    "Find duplicates in array":
+        "→ Set or Counter",
+
+    "Container with most water":
+        "→ Two pointers (array not sorted but greedy approach)",
+
+    "Search in rotated sorted array":
+        "→ Modified binary search",
+}
+
+# Practice: Cover the answer and identify pattern!`
+        },
+        {
+          type: 'section',
+          title: 'Time Management',
+          content: 'When to move on vs. when to persist.'
+        },
+        {
+          type: 'code',
+          code: `"""
+TIME MANAGEMENT RULES:
+
+Q1 (Easy): 8-10 minutes MAX
+- If not done in 12 minutes → MOVE ON
+- Come back with 5 min left
+
+Q2 (Medium): 15-18 minutes target
+- If stuck for 15 min → code brute force & MOVE ON
+- 50% credit better than 0%
+
+Q3 (Medium): 18-22 minutes target
+- Same as Q2
+- Aim for working solution over perfect
+
+Q4 (Hard): 20-25 minutes
+- Read problem carefully (3 min)
+- If completely stuck after 10 min:
+  → Code brute force
+  → Add comments explaining optimization idea
+  → Move on if time tight
+
+CRITICAL: Leave 5 minutes at end to:
+- Review all solutions
+- Remove print statements
+- Test edge cases
+- Submit everything!
+
+NEVER spend 40 minutes on Q4 while Q2-Q3 unsolved!
+"""
+
+# Mental timer:
+# 0-10 min: Q1
+# 10-28 min: Q2
+# 28-50 min: Q3
+# 50-70 min: Q4 + review
+
+# If you're behind schedule:
+priorities = {
+    "Q1-Q3 working solution": "TOP PRIORITY",
+    "Q4 brute force": "Better than nothing",
+    "Q1-Q3 optimized": "Nice to have",
+    "Q4 optimized": "Bonus",
+    "Perfect code": "Don't waste time!",
+}`
+        },
+        {
+          type: 'section',
+          title: 'Communication Template',
+          content: 'How to structure your code and comments.'
+        },
+        {
+          type: 'code',
+          code: `"""
+GOOD CODE STRUCTURE:
+
+1. Clear function name
+2. Brief docstring
+3. Handle edge cases first
+4. Main logic with comments
+5. Return statement
+"""
+
+def find_pair_sum(nums, target):
+    """
+    Find two numbers in nums that sum to target.
+    Returns indices or None if not found.
+
+    Time: O(n), Space: O(n)
+    """
+    # Edge case: empty or single element
+    if len(nums) < 2:
+        return None
+
+    # Hash map approach: store complements
+    seen = {}  # value → index
+
+    for i, num in enumerate(nums):
+        complement = target - num
+
+        # Check if complement exists
+        if complement in seen:
+            return [seen[complement], i]
+
+        # Store current number
+        seen[num] = i
+
+    return None  # No pair found
+
+# ✓ Clean structure
+# ✓ Edge cases handled
+# ✓ Comments explain logic
+# ✓ Complexity noted
+# ✓ No print statements!
+
+"""
+AVOID:
+- Long variable names: "array_of_numbers_to_check"
+- No comments
+- Print statements left in code
+- Unclear logic flow
+- Magic numbers without explanation
+"""`
+        },
+        {
+          type: 'tip',
+          content: '🎯 MASTER THIS STRATEGY: Brute force first for partial credit, then optimize. Many candidates fail by spending 30 minutes trying to find the perfect O(n) solution instead of coding O(n²) in 5 minutes. 50% > 0%!'
+        }
+      ]
+    },
+    14: {
+      title: 'Python Gotchas',
+      description: 'Avoid common mistakes that cost precious time',
+      content: [
+        {
+          type: 'text',
+          content: 'These Python-specific bugs waste time during tests. Learn them now to avoid surprises on test day!'
+        },
+        {
+          type: 'section',
+          title: 'Mutable Default Arguments',
+          content: 'One of the most common Python traps!'
+        },
+        {
+          type: 'code',
+          code: `# ❌ WRONG: Mutable default argument
+def append_to(element, target=[]):  # BUG!
+    target.append(element)
+    return target
+
+# Surprise! The list persists between calls
+print(append_to(1))  # [1]
+print(append_to(2))  # [1, 2] ← NOT [2]!
+print(append_to(3))  # [1, 2, 3] ← NOT [3]!
+
+# Why? Default [] is created once when function defined,
+# not each time function is called!
+
+# ✓ CORRECT: Use None as default
+def append_to_fixed(element, target=None):
+    if target is None:
+        target = []
+    target.append(element)
+    return target
+
+print(append_to_fixed(1))  # [1]
+print(append_to_fixed(2))  # [2] ← Correct!
+
+# Same issue with dict:
+def add_to_dict(key, value, d={}):  # BUG!
+    d[key] = value
+    return d
+
+# Fix:
+def add_to_dict_fixed(key, value, d=None):
+    if d is None:
+        d = {}
+    d[key] = value
+    return d`
+        },
+        {
+          type: 'section',
+          title: 'Integer Division',
+          content: 'Python 3 changed division behavior.'
+        },
+        {
+          type: 'code',
+          code: `# Division in Python 3:
+print(5 / 2)   # 2.5 (float division)
+print(5 // 2)  # 2 (floor division)
+
+# Common bug in binary search:
+def binary_search_bug(arr, target):
+    left, right = 0, len(arr) - 1
+
+    while left <= right:
+        mid = (left + right) / 2  # ❌ BUG! Returns float
+        # This will cause: TypeError: list indices must be integers
+        if arr[mid] == target:
+            return mid
+        # ...
+
+# ✓ CORRECT: Use //
+def binary_search_fixed(arr, target):
+    left, right = 0, len(arr) - 1
+
+    while left <= right:
+        mid = (left + right) // 2  # ✓ Integer
+        if arr[mid] == target:
+            return mid
+        elif arr[mid] < target:
+            left = mid + 1
+        else:
+            right = mid - 1
+    return -1
+
+# Negative numbers:
+print(-7 // 2)  # -4 (floors toward negative infinity)
+# If you want truncation toward zero:
+print(int(-7 / 2))  # -3`
+        },
+        {
+          type: 'section',
+          title: 'Shallow vs. Deep Copy',
+          content: 'Copying lists of lists is tricky!'
+        },
+        {
+          type: 'code',
+          code: `# ❌ WRONG: Shallow copy
+a = [[1, 2], [3, 4]]
+b = a.copy()  # or list(a) or a[:]
+
+b[0][0] = 99
+print(a)  # [[99, 2], [3, 4]] ← SURPRISE! 'a' changed!
+
+# Why? copy() only copies outer list, inner lists still shared!
+
+# ✓ CORRECT: Deep copy
+from copy import deepcopy
+a = [[1, 2], [3, 4]]
+b = deepcopy(a)
+
+b[0][0] = 99
+print(a)  # [[1, 2], [3, 4]] ← Unchanged!
+print(b)  # [[99, 2], [3, 4]] ← Changed!
+
+# Alternative for simple cases:
+a = [[1, 2], [3, 4]]
+b = [row[:] for row in a]  # Copy each inner list
+
+# Common in matrix problems:
+def create_matrix(rows, cols):
+    # ❌ WRONG
+    matrix = [[0] * cols] * rows  # All rows share same list!
+    matrix[0][0] = 1
+    print(matrix)  # [[1, 0, 0], [1, 0, 0], [1, 0, 0]] ← Bug!
+
+    # ✓ CORRECT
+    matrix = [[0] * cols for _ in range(rows)]
+    matrix[0][0] = 1
+    print(matrix)  # [[1, 0, 0], [0, 0, 0], [0, 0, 0]] ← Correct!`
+        },
+        {
+          type: 'section',
+          title: 'List Modification During Iteration',
+          content: 'Never modify a list while iterating over it!'
+        },
+        {
+          type: 'code',
+          code: `# ❌ WRONG: Modifying list during iteration
+nums = [1, 2, 3, 4, 5]
+for num in nums:
+    if num % 2 == 0:
+        nums.remove(num)  # BUG! Skips elements
+
+print(nums)  # [1, 3, 5] ← Looks right, but...
+# Try: [2, 2, 3] → Result: [2, 3] (misses second 2!)
+
+# Why? Iterator gets confused when list changes size
+
+# ✓ CORRECT: Iterate over copy
+nums = [1, 2, 3, 4, 5]
+for num in nums[:]:  # Iterate over copy
+    if num % 2 == 0:
+        nums.remove(num)
+
+# Better: List comprehension
+nums = [1, 2, 3, 4, 5]
+nums = [num for num in nums if num % 2 != 0]
+
+# Or filter in-place with indices (backwards!)
+nums = [1, 2, 3, 4, 5]
+for i in range(len(nums) - 1, -1, -1):  # Backwards avoids issues
+    if nums[i] % 2 == 0:
+        nums.pop(i)
+
+# Dictionary iteration:
+d = {'a': 1, 'b': 2, 'c': 3}
+
+# ❌ WRONG
+for key in d:
+    if d[key] == 2:
+        del d[key]  # RuntimeError!
+
+# ✓ CORRECT
+d = {k: v for k, v in d.items() if v != 2}`
+        },
+        {
+          type: 'section',
+          title: 'String Immutability',
+          content: 'Strings cannot be modified in-place.'
+        },
+        {
+          type: 'code',
+          code: `# ❌ WRONG: Can't modify string
+s = "hello"
+s[0] = 'H'  # TypeError: str object does not support item assignment
+
+# ✓ CORRECT: Create new string
+s = "hello"
+s = 'H' + s[1:]  # "Hello"
+
+# Or convert to list:
+s = "hello"
+s_list = list(s)
+s_list[0] = 'H'
+s = ''.join(s_list)  # "Hello"
+
+# Performance issue: String concatenation in loop
+# ❌ SLOW: O(n²) due to string immutability
+result = ""
+for char in "hello":
+    result += char  # Creates new string each time!
+
+# ✓ FAST: O(n)
+result = ''.join(char for char in "hello")
+
+# Or use list:
+result = []
+for char in "hello":
+    result.append(char)
+result = ''.join(result)`
+        },
+        {
+          type: 'section',
+          title: 'Variable Scope in Loops',
+          content: 'Loop variables persist after loop ends.'
+        },
+        {
+          type: 'code',
+          code: `# Loop variable persists:
+for i in range(5):
+    pass
+
+print(i)  # 4 (still exists!)
+
+# Watch out for lambda capture:
+functions = []
+for i in range(3):
+    functions.append(lambda: i)  # All capture same 'i'!
+
+for func in functions:
+    print(func())  # 2, 2, 2 ← NOT 0, 1, 2!
+
+# Fix: Use default argument
+functions = []
+for i in range(3):
+    functions.append(lambda x=i: x)  # Capture current value
+
+for func in functions:
+    print(func())  # 0, 1, 2 ← Correct!`
+        },
+        {
+          type: 'section',
+          title: 'Truthy and Falsy Values',
+          content: 'Know what evaluates to False in boolean context.'
+        },
+        {
+          type: 'code',
+          code: `# Falsy values in Python:
+# - None
+# - False
+# - 0, 0.0
+# - "", [], {}, ()
+# - Empty sets, ranges
+
+# Everything else is truthy!
+
+# Common mistakes:
+def process(data):
+    if not data:  # Careful! This catches empty lists AND None
+        return "No data"
+    return f"Processing {len(data)} items"
+
+print(process(None))  # "No data" ← Correct
+print(process([]))    # "No data" ← Maybe not intended?
+
+# Be explicit:
+def process_explicit(data):
+    if data is None:
+        return "No data"
+    if len(data) == 0:
+        return "Empty list"
+    return f"Processing {len(data)} items"
+
+# Watch out for 0:
+def find_index(arr, target):
+    for i, val in enumerate(arr):
+        if val == target:
+            return i
+    return None
+
+result = find_index([0, 1, 2], 0)
+if not result:  # ❌ BUG! 0 is falsy
+    print("Not found")  # Wrong!
+
+# ✓ CORRECT:
+if result is None:
+    print("Not found")`
+        },
+        {
+          type: 'tip',
+          content: '⚠️ TEST YOUR CODE: These gotchas are easy to miss! Always test with edge cases. Most common bug: shallow copy of nested lists. Use deepcopy or list comprehension [row[:] for row in matrix].'
+        }
+      ]
     }
   }
 
@@ -1412,7 +2940,7 @@ print(two_sum_exists(nums, 9))  # True`
           <ArrowLeft size={16} />
           Back to Course
         </Link>
-        {parseInt(id) < 8 && (
+        {parseInt(id) < 14 && (
           <Link to={`/python-course/lesson/${parseInt(id) + 1}`} className="btn-primary">
             Next Lesson
             <ArrowLeft size={16} className="rotate-180" />
