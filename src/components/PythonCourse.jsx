@@ -103,10 +103,10 @@ export default function PythonCourse() {
                 </div>
               </div>
 
-              <button className="btn-primary">
+              <Link to={`/python-course/lesson/${lesson.id}`} className="btn-primary">
                 <Play size={16} />
                 Start
-              </button>
+              </Link>
             </div>
           </div>
         ))}
