@@ -9,6 +9,8 @@ import Analytics from './components/Analytics'
 import PythonCourse from './components/PythonCourse'
 import PythonLesson from './components/PythonLesson'
 import Resources from './components/Resources'
+import CodeTemplates from './components/CodeTemplates'
+import CommonPitfalls from './components/CommonPitfalls'
 
 function App() {
   const [darkMode, setDarkMode] = useState(true)
@@ -28,6 +30,8 @@ function App() {
             <Route path="/python-course" element={<PythonCourse />} />
             <Route path="/python-course/lesson/:id" element={<PythonLesson />} />
             <Route path="/resources" element={<Resources />} />
+            <Route path="/templates" element={<CodeTemplates />} />
+            <Route path="/pitfalls" element={<CommonPitfalls />} />
           </Routes>
         </main>
       </div>

@@ -1,5 +1,5 @@
 import { Link, useLocation } from 'react-router-dom'
-import { Home, Code, Clock, BarChart3, BookOpen, Library, Moon, Sun } from 'lucide-react'
+import { Home, Code, Clock, BarChart3, BookOpen, Library, Moon, Sun, FileCode, AlertTriangle } from 'lucide-react'
 
 export default function Navigation({ darkMode, setDarkMode }) {
   const location = useLocation()
@@ -8,8 +8,10 @@ export default function Navigation({ darkMode, setDarkMode }) {
     { path: '/', icon: Home, label: 'Dashboard' },
     { path: '/problems', icon: Code, label: 'Problems' },
     { path: '/mock-test', icon: Clock, label: 'Mock Test' },
-    { path: '/analytics', icon: BarChart3, label: 'Analytics' },
-    { path: '/python-course', icon: BookOpen, label: 'Python Course' },
+    { path: '/python-course', icon: BookOpen, label: 'Python' },
+    { path: '/templates', icon: FileCode, label: 'Templates' },
+    { path: '/pitfalls', icon: AlertTriangle, label: 'Checklist' },
+    { path: '/analytics', icon: BarChart3, label: 'Stats' },
     { path: '/resources', icon: Library, label: 'Resources' },
   ]
 
