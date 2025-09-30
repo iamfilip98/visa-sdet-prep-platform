@@ -6,6 +6,524 @@ export default function PythonLesson() {
 
   const lessons = {
     1: {
+      title: 'Python Basics',
+      description: 'Variables, data types, and basic operations',
+      content: [
+        {
+          type: 'text',
+          content: 'Master the fundamental building blocks of Python. Understanding these basics is essential before moving to advanced CodeSignal topics.'
+        },
+        {
+          type: 'section',
+          title: 'Variables and Assignment',
+          content: 'Variables store data without explicit type declarations.'
+        },
+        {
+          type: 'code',
+          code: `# Variable assignment (no type declaration needed)
+x = 10
+name = "Alice"
+is_valid = True
+
+# Multiple assignment
+a, b, c = 1, 2, 3
+x = y = z = 0
+
+# Swap values
+a, b = 5, 10
+a, b = b, a  # a=10, b=5
+
+# Variable naming
+valid_name = "ok"
+_private = "ok"
+name2 = "ok"
+# 2name = "error"  # Can't start with number`
+        },
+        {
+          type: 'section',
+          title: 'Data Types',
+          content: 'Python has several built-in data types.'
+        },
+        {
+          type: 'code',
+          code: `# Numbers
+integer = 42
+floating = 3.14
+scientific = 1.5e3  # 1500.0
+
+# Strings
+single = 'hello'
+double = "world"
+multi = """multiple
+lines"""
+
+# Boolean
+is_true = True
+is_false = False
+
+# None (null value)
+empty = None
+
+# Check type
+print(type(42))        # <class 'int'>
+print(type(3.14))      # <class 'float'>
+print(type("hello"))   # <class 'str'>
+
+# Type conversion
+x = int("123")      # "123" -> 123
+y = str(123)        # 123 -> "123"
+z = float("3.14")   # "3.14" -> 3.14`
+        },
+        {
+          type: 'section',
+          title: 'Basic Data Structures',
+          content: 'Lists, tuples, and dictionaries are fundamental.'
+        },
+        {
+          type: 'code',
+          code: `# List (mutable, ordered)
+nums = [1, 2, 3, 4, 5]
+mixed = [1, "two", 3.0, True]
+nums.append(6)        # Add to end
+nums[0] = 10          # Modify element
+
+# Tuple (immutable, ordered)
+point = (10, 20)
+rgb = (255, 0, 128)
+# point[0] = 5  # Error! Can't modify
+
+# Dictionary (key-value pairs)
+person = {
+    "name": "Alice",
+    "age": 25,
+    "city": "NYC"
+}
+print(person["name"])  # "Alice"
+person["age"] = 26     # Modify value
+person["job"] = "Dev"  # Add new key
+
+# Common operations
+len(nums)              # Length
+1 in nums              # Membership check
+nums + [7, 8]          # Concatenation`
+        },
+        {
+          type: 'section',
+          title: 'Basic Operators',
+          content: 'Arithmetic, comparison, and logical operators.'
+        },
+        {
+          type: 'code',
+          code: `# Arithmetic
+x = 10 + 5        # Addition: 15
+x = 10 - 5        # Subtraction: 5
+x = 10 * 5        # Multiplication: 50
+x = 10 / 3        # Division: 3.333...
+x = 10 // 3       # Floor division: 3
+x = 10 % 3        # Modulo: 1
+x = 2 ** 3        # Power: 8
+
+# Comparison
+10 == 10          # Equal: True
+10 != 5           # Not equal: True
+10 > 5            # Greater: True
+10 < 5            # Less: False
+10 >= 10          # Greater or equal: True
+10 <= 5           # Less or equal: False
+
+# Logical
+True and False    # False
+True or False     # True
+not True          # False
+
+# Shorthand operators
+x = 10
+x += 5            # x = x + 5 (15)
+x -= 3            # x = x - 3 (12)
+x *= 2            # x = x * 2 (24)
+x //= 4           # x = x // 4 (6)`
+        },
+        {
+          type: 'tip',
+          content: 'Python is dynamically typed - variables can change types. Use meaningful variable names and remember that indentation matters!'
+        }
+      ]
+    },
+    2: {
+      title: 'Control Flow',
+      description: 'If statements, loops (for/while), break/continue',
+      content: [
+        {
+          type: 'text',
+          content: 'Control flow structures let you make decisions and repeat actions. These are essential for solving algorithm problems.'
+        },
+        {
+          type: 'section',
+          title: 'If Statements',
+          content: 'Make decisions based on conditions.'
+        },
+        {
+          type: 'code',
+          code: `# Basic if
+x = 10
+if x > 0:
+    print("positive")
+
+# If-else
+x = -5
+if x > 0:
+    print("positive")
+else:
+    print("non-positive")
+
+# If-elif-else
+score = 85
+if score >= 90:
+    grade = "A"
+elif score >= 80:
+    grade = "B"
+elif score >= 70:
+    grade = "C"
+else:
+    grade = "F"
+
+# Multiple conditions
+age = 25
+has_license = True
+if age >= 18 and has_license:
+    print("Can drive")
+
+# Ternary operator (one-line if)
+x = 10
+result = "even" if x % 2 == 0 else "odd"
+
+# Truthy and falsy values
+# Falsy: False, None, 0, "", [], {}, ()
+# Everything else is truthy
+if [1, 2, 3]:      # True (non-empty list)
+    print("has items")
+
+if not []:          # True (empty list is falsy)
+    print("empty")`
+        },
+        {
+          type: 'section',
+          title: 'For Loops',
+          content: 'Iterate over sequences and ranges.'
+        },
+        {
+          type: 'code',
+          code: `# Loop over list
+nums = [1, 2, 3, 4, 5]
+for num in nums:
+    print(num)
+
+# Loop over range
+for i in range(5):        # 0, 1, 2, 3, 4
+    print(i)
+
+for i in range(2, 8):     # 2, 3, 4, 5, 6, 7
+    print(i)
+
+for i in range(0, 10, 2): # 0, 2, 4, 6, 8 (step=2)
+    print(i)
+
+# Loop over string
+for char in "hello":
+    print(char)  # h, e, l, l, o
+
+# Loop over dictionary
+person = {"name": "Alice", "age": 25}
+for key in person:
+    print(key, person[key])
+
+for key, value in person.items():
+    print(key, value)
+
+# Enumerate (get index + value)
+fruits = ['apple', 'banana', 'cherry']
+for i, fruit in enumerate(fruits):
+    print(f"{i}: {fruit}")
+
+# Nested loops
+for i in range(3):
+    for j in range(3):
+        print(f"({i}, {j})")`
+        },
+        {
+          type: 'section',
+          title: 'While Loops',
+          content: 'Repeat while a condition is true.'
+        },
+        {
+          type: 'code',
+          code: `# Basic while
+count = 0
+while count < 5:
+    print(count)
+    count += 1
+
+# While with condition
+x = 10
+while x > 0:
+    print(x)
+    x -= 1
+
+# Infinite loop with break
+while True:
+    user_input = input("Enter 'quit' to exit: ")
+    if user_input == 'quit':
+        break
+    print(f"You entered: {user_input}")
+
+# While with else (executes if loop completes normally)
+n = 5
+while n > 0:
+    print(n)
+    n -= 1
+else:
+    print("Done!")  # Executes after loop`
+        },
+        {
+          type: 'section',
+          title: 'Break and Continue',
+          content: 'Control loop execution flow.'
+        },
+        {
+          type: 'code',
+          code: `# break - exit loop immediately
+for i in range(10):
+    if i == 5:
+        break  # Stop loop when i=5
+    print(i)  # Prints 0, 1, 2, 3, 4
+
+# continue - skip to next iteration
+for i in range(10):
+    if i % 2 == 0:
+        continue  # Skip even numbers
+    print(i)  # Prints 1, 3, 5, 7, 9
+
+# Find first element
+nums = [1, 3, 5, 8, 9, 11]
+for num in nums:
+    if num % 2 == 0:
+        print(f"First even: {num}")
+        break
+
+# Skip invalid values
+nums = [1, -2, 3, -4, 5]
+for num in nums:
+    if num < 0:
+        continue  # Skip negative numbers
+    print(num)  # Prints 1, 3, 5
+
+# Nested loops with break
+found = False
+for i in range(5):
+    for j in range(5):
+        if i * j == 12:
+            print(f"Found: {i} * {j} = 12")
+            found = True
+            break
+    if found:
+        break  # Exit outer loop`
+        },
+        {
+          type: 'tip',
+          content: 'Use for loops when you know the number of iterations, while loops for unknown iterations. Break and continue help avoid nested if statements.'
+        }
+      ]
+    },
+    3: {
+      title: 'Functions & Scope',
+      description: 'Function syntax, parameters, return values, lambda',
+      content: [
+        {
+          type: 'text',
+          content: 'Functions help organize code into reusable blocks. Understanding functions, parameters, and scope is crucial for writing clean solutions.'
+        },
+        {
+          type: 'section',
+          title: 'Defining Functions',
+          content: 'Basic function syntax and return values.'
+        },
+        {
+          type: 'code',
+          code: `# Basic function
+def greet():
+    print("Hello!")
+
+greet()  # Call function
+
+# Function with parameters
+def greet_person(name):
+    print(f"Hello, {name}!")
+
+greet_person("Alice")
+
+# Function with return value
+def add(a, b):
+    return a + b
+
+result = add(5, 3)  # 8
+
+# Multiple return values (tuple)
+def get_stats(nums):
+    return min(nums), max(nums), sum(nums)
+
+min_val, max_val, total = get_stats([1, 2, 3, 4, 5])
+
+# Early return
+def is_positive(x):
+    if x > 0:
+        return True
+    return False
+
+# No explicit return -> returns None
+def no_return():
+    x = 10
+
+result = no_return()  # None`
+        },
+        {
+          type: 'section',
+          title: 'Function Parameters',
+          content: 'Default values, keyword arguments, and variable arguments.'
+        },
+        {
+          type: 'code',
+          code: `# Default parameters
+def greet(name="Guest"):
+    print(f"Hello, {name}!")
+
+greet()         # "Hello, Guest!"
+greet("Alice")  # "Hello, Alice!"
+
+# Keyword arguments
+def create_user(name, age, city="NYC"):
+    return {"name": name, "age": age, "city": city}
+
+user = create_user(name="Alice", age=25)
+user = create_user(age=25, name="Alice")  # Order doesn't matter
+
+# Variable arguments (*args)
+def sum_all(*args):
+    return sum(args)
+
+print(sum_all(1, 2, 3))        # 6
+print(sum_all(1, 2, 3, 4, 5))  # 15
+
+# Keyword variable arguments (**kwargs)
+def print_info(**kwargs):
+    for key, value in kwargs.items():
+        print(f"{key}: {value}")
+
+print_info(name="Alice", age=25, city="NYC")
+
+# Combining all types
+def complex_func(a, b, *args, default=10, **kwargs):
+    print(f"a={a}, b={b}")
+    print(f"args={args}")
+    print(f"default={default}")
+    print(f"kwargs={kwargs}")`
+        },
+        {
+          type: 'section',
+          title: 'Lambda Functions',
+          content: 'Anonymous one-line functions for simple operations.'
+        },
+        {
+          type: 'code',
+          code: `# Regular function
+def square(x):
+    return x ** 2
+
+# Lambda equivalent
+square = lambda x: x ** 2
+print(square(5))  # 25
+
+# Lambda with multiple parameters
+add = lambda a, b: a + b
+print(add(3, 7))  # 10
+
+# Common use: sorting with custom key
+students = [
+    ("Alice", 85),
+    ("Bob", 92),
+    ("Charlie", 78)
+]
+# Sort by grade (second element)
+sorted_students = sorted(students, key=lambda x: x[1])
+
+# Use in map()
+nums = [1, 2, 3, 4, 5]
+squared = list(map(lambda x: x ** 2, nums))
+# [1, 4, 9, 16, 25]
+
+# Use in filter()
+evens = list(filter(lambda x: x % 2 == 0, nums))
+# [2, 4]
+
+# Ternary in lambda
+abs_value = lambda x: x if x >= 0 else -x
+print(abs_value(-5))  # 5`
+        },
+        {
+          type: 'section',
+          title: 'Variable Scope',
+          content: 'Local, global, and nonlocal variables.'
+        },
+        {
+          type: 'code',
+          code: `# Global scope
+x = 10  # Global variable
+
+def func():
+    y = 5  # Local variable
+    print(x)  # Can read global: 10
+    print(y)  # Can read local: 5
+
+func()
+# print(y)  # Error! y is not defined outside func
+
+# Modify global variable
+count = 0
+
+def increment():
+    global count  # Declare we're using global
+    count += 1
+
+increment()
+print(count)  # 1
+
+# Nested functions and nonlocal
+def outer():
+    x = 10
+
+    def inner():
+        nonlocal x  # Refer to outer's x
+        x += 5
+        print(x)  # 15
+
+    inner()
+    print(x)  # 15 (modified by inner)
+
+outer()
+
+# Best practice: avoid global, pass parameters instead
+def increment(count):
+    return count + 1
+
+count = 0
+count = increment(count)  # Better approach`
+        },
+        {
+          type: 'tip',
+          content: 'Use functions to break problems into smaller pieces. Lambda is great for simple operations in map/filter/sorted. Avoid global variables - pass parameters instead!'
+        }
+      ]
+    },
+    4: {
       title: 'Collections Module Mastery',
       description: 'Learn Counter, defaultdict, and deque - essential for CodeSignal',
       content: [
@@ -127,7 +645,7 @@ def max_sliding_window(nums, k):
         }
       ]
     },
-    2: {
+    5: {
       title: 'List Comprehensions',
       description: 'Write Pythonic code that saves time',
       content: [
@@ -253,7 +771,7 @@ high_scores = {k: v for k, v in scores.items() if v >= 90}
         }
       ]
     },
-    3: {
+    6: {
       title: 'Built-in Functions',
       description: 'sorted(), enumerate(), zip(), map(), filter()',
       content: [
@@ -447,7 +965,7 @@ non_empty = list(filter(None, words))  # None filters falsy values
         }
       ]
     },
-    4: {
+    7: {
       title: 'String Operations',
       description: 'split(), join(), strip() and string slicing',
       content: [
@@ -611,7 +1129,7 @@ print("hello.txt".startswith("he"))   # True`
         }
       ]
     },
-    5: {
+    8: {
       title: 'Set Operations',
       description: 'Fast lookups and set arithmetic',
       content: [
@@ -894,7 +1412,7 @@ print(two_sum_exists(nums, 9))  # True`
           <ArrowLeft size={16} />
           Back to Course
         </Link>
-        {parseInt(id) < 5 && (
+        {parseInt(id) < 8 && (
           <Link to={`/python-course/lesson/${parseInt(id) + 1}`} className="btn-primary">
             Next Lesson
             <ArrowLeft size={16} className="rotate-180" />

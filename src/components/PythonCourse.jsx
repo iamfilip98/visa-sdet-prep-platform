@@ -5,6 +5,30 @@ export default function PythonCourse() {
   const lessons = [
     {
       id: 1,
+      title: 'Python Basics',
+      description: 'Variables, data types, and basic operations',
+      duration: '15 min',
+      problems: 4,
+      completed: false,
+    },
+    {
+      id: 2,
+      title: 'Control Flow',
+      description: 'If statements, loops (for/while), break/continue',
+      duration: '12 min',
+      problems: 4,
+      completed: false,
+    },
+    {
+      id: 3,
+      title: 'Functions & Scope',
+      description: 'Function syntax, parameters, return values, lambda',
+      duration: '10 min',
+      problems: 3,
+      completed: false,
+    },
+    {
+      id: 4,
       title: 'Collections Module Mastery',
       description: 'Learn Counter, defaultdict, and deque - essential for CodeSignal',
       duration: '20 min',
@@ -12,7 +36,7 @@ export default function PythonCourse() {
       completed: false,
     },
     {
-      id: 2,
+      id: 5,
       title: 'List Comprehensions',
       description: 'Write Pythonic code that saves time',
       duration: '15 min',
@@ -20,7 +44,7 @@ export default function PythonCourse() {
       completed: false,
     },
     {
-      id: 3,
+      id: 6,
       title: 'Built-in Functions',
       description: 'sorted(), enumerate(), zip(), map(), filter()',
       duration: '15 min',
@@ -28,7 +52,7 @@ export default function PythonCourse() {
       completed: false,
     },
     {
-      id: 4,
+      id: 7,
       title: 'String Operations',
       description: 'split(), join(), strip() and string slicing',
       duration: '10 min',
@@ -36,7 +60,7 @@ export default function PythonCourse() {
       completed: false,
     },
     {
-      id: 5,
+      id: 8,
       title: 'Set Operations',
       description: 'Fast lookups and set arithmetic',
       duration: '10 min',
