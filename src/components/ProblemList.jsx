@@ -1,13 +1,24 @@
-import { useState, useMemo } from 'react'
+import { useState, useMemo, useEffect } from 'react'
 import { Link } from 'react-router-dom'
-import { Search, Filter, Star, Clock, TrendingUp } from 'lucide-react'
+import { Search, Filter, Star, Clock, TrendingUp, CheckCircle } from 'lucide-react'
 import { problemDatabase, categories } from '../data/problems'
+import { getSolvedProblems } from '../utils/database'
 
 export default function ProblemList() {
   const [searchTerm, setSearchTerm] = useState('')
   const [difficultyFilter, setDifficultyFilter] = useState('all')
   const [categoryFilter, setCategoryFilter] = useState('all')
   const [frequencyFilter, setFrequencyFilter] = useState('all')
+  const [statusFilter, setStatusFilter] = useState('all')
+  const [solvedProblems, setSolvedProblems] = useState(new Set())
+
+  useEffect(() => {
+    async function loadSolvedProblems() {
+      const solved = await getSolvedProblems()
+      setSolvedProblems(solved)
+    }
+    loadSolvedProblems()
+  }, [])
 
   const filteredProblems = useMemo(() => {
     return problemDatabase.filter(problem => {
@@ -16,10 +27,14 @@ export default function ProblemList() {
       const matchesDifficulty = difficultyFilter === 'all' || problem.difficulty === difficultyFilter
       const matchesCategory = categoryFilter === 'all' || problem.category === categoryFilter
       const matchesFrequency = frequencyFilter === 'all' || problem.visaFrequency === frequencyFilter
+      const isSolved = solvedProblems.has(problem.id)
+      const matchesStatus = statusFilter === 'all' ||
+                           (statusFilter === 'solved' && isSolved) ||
+                           (statusFilter === 'unsolved' && !isSolved)
 
-      return matchesSearch && matchesDifficulty && matchesCategory && matchesFrequency
+      return matchesSearch && matchesDifficulty && matchesCategory && matchesFrequency && matchesStatus
     })
-  }, [searchTerm, difficultyFilter, categoryFilter, frequencyFilter])
+  }, [searchTerm, difficultyFilter, categoryFilter, frequencyFilter, statusFilter, solvedProblems])
 
   const getDifficultyColor = (difficulty) => {
     switch(difficulty) {
@@ -110,10 +125,23 @@ export default function ProblemList() {
               <option value="learning">🐍 Learning</option>
             </select>
           </div>
+
+          {/* Status Filter */}
+          <div>
+            <select
+              value={statusFilter}
+              onChange={(e) => setStatusFilter(e.target.value)}
+              className="w-full px-4 py-2 border border-gray-300 dark:border-gray-600 rounded-lg bg-white dark:bg-gray-800 focus:ring-2 focus:ring-blue-500"
+            >
+              <option value="all">All Status</option>
+              <option value="solved">✓ Solved</option>
+              <option value="unsolved">⭕ Unsolved</option>
+            </select>
+          </div>
         </div>
 
         {/* Active Filters */}
-        {(difficultyFilter !== 'all' || categoryFilter !== 'all' || frequencyFilter !== 'all' || searchTerm) && (
+        {(difficultyFilter !== 'all' || categoryFilter !== 'all' || frequencyFilter !== 'all' || statusFilter !== 'all' || searchTerm) && (
           <div className="mt-4 flex flex-wrap gap-2">
             <span className="text-sm text-gray-600 dark:text-gray-400">Active filters:</span>
             {difficultyFilter !== 'all' && (
@@ -153,6 +181,9 @@ export default function ProblemList() {
           >
             <div className="flex-1">
               <div className="flex items-center gap-3 mb-2">
+                {solvedProblems.has(problem.id) && (
+                  <CheckCircle className="text-green-500 flex-shrink-0" size={20} />
+                )}
                 <h3 className="font-semibold text-lg">{problem.title}</h3>
                 <span className={`badge ${getDifficultyColor(problem.difficulty)}`}>
                   {problem.difficulty}

@@ -2,7 +2,7 @@ import { Link } from 'react-router-dom'
 import { useEffect, useState } from 'react'
 import { Trophy, Target, Flame, Clock, AlertCircle, TrendingUp, Award, CheckCircle, XCircle } from 'lucide-react'
 import { problemDatabase } from '../data/problems'
-import { getAnalytics, getStreak } from '../utils/database'
+import { getAnalytics, getStreak, getReadinessScore } from '../utils/database'
 
 export default function Dashboard() {
   const [stats, setStats] = useState({
@@ -11,11 +11,38 @@ export default function Dashboard() {
     byDifficulty: { easy: 0, medium: 0, hard: 0 }
   })
 
+  const [readinessData, setReadinessData] = useState({
+    percentage: 0,
+    readiness: {
+      easy: false,
+      medium: false,
+      hard: false,
+      mockTests: false,
+      pythonCourse: false
+    },
+    current: {
+      easy: 0,
+      medium: 0,
+      hard: 0,
+      mockTests: 0,
+      lessons: 0
+    },
+    targets: {
+      easy: 20,
+      medium: 25,
+      hard: 8,
+      mockTests: 2,
+      lessons: 14
+    }
+  })
+
   useEffect(() => {
     async function loadStats() {
       const analytics = await getAnalytics()
       const streak = await getStreak()
+      const readiness = await getReadinessScore()
       setStats({ ...analytics, streak })
+      setReadinessData(readiness)
     }
     loadStats()
   }, [])
@@ -23,32 +50,15 @@ export default function Dashboard() {
   const totalProblems = problemDatabase.length
   const progressPercent = ((stats.totalSolved / totalProblems) * 100).toFixed(0)
 
-  // Calculate readiness score
-  const readinessScore = {
-    easyTarget: 20,
-    mediumTarget: 25,
-    hardTarget: 8,
-    mockTestTarget: 2,
-    pythonCourseTarget: 14 // Total lessons
-  }
-
-  const readiness = {
-    easy: stats.byDifficulty.easy >= readinessScore.easyTarget,
-    medium: stats.byDifficulty.medium >= readinessScore.mediumTarget,
-    hard: stats.byDifficulty.hard >= readinessScore.hardTarget,
-    mockTests: false, // TODO: track mock tests
-    pythonCourse: false // TODO: track course completion
-  }
-
   const readinessItems = [
-    { name: 'Easy Problems', met: readiness.easy, current: stats.byDifficulty.easy, target: readinessScore.easyTarget },
-    { name: 'Medium Problems', met: readiness.medium, current: stats.byDifficulty.medium, target: readinessScore.mediumTarget },
-    { name: 'Hard Problems', met: readiness.hard, current: stats.byDifficulty.hard, target: readinessScore.hardTarget },
-    { name: 'Mock Tests', met: readiness.mockTests, current: 0, target: readinessScore.mockTestTarget },
-    { name: 'Python Course', met: readiness.pythonCourse, current: 0, target: readinessScore.pythonCourseTarget }
+    { name: 'Easy Problems', met: readinessData.readiness.easy, current: readinessData.current.easy, target: readinessData.targets.easy },
+    { name: 'Medium Problems', met: readinessData.readiness.medium, current: readinessData.current.medium, target: readinessData.targets.medium },
+    { name: 'Hard Problems', met: readinessData.readiness.hard, current: readinessData.current.hard, target: readinessData.targets.hard },
+    { name: 'Mock Tests', met: readinessData.readiness.mockTests, current: readinessData.current.mockTests, target: readinessData.targets.mockTests },
+    { name: 'Python Course', met: readinessData.readiness.pythonCourse, current: readinessData.current.lessons, target: readinessData.targets.lessons }
   ]
 
-  const readinessPercent = Math.round((Object.values(readiness).filter(Boolean).length / Object.values(readiness).length) * 100)
+  const readinessPercent = readinessData.percentage
 
   const visaInsights = [
     { icon: AlertCircle, text: "Hash maps appear in 70% of Q4 problems", color: "text-red-500" },
@@ -108,11 +118,11 @@ export default function Dashboard() {
               Next Steps:
             </p>
             <ul className="text-sm text-purple-800 dark:text-purple-200 mt-1 space-y-1">
-              {!readiness.easy && <li>• Solve {readinessScore.easyTarget - stats.byDifficulty.easy} more easy problems</li>}
-              {!readiness.medium && <li>• Solve {readinessScore.mediumTarget - stats.byDifficulty.medium} more medium problems</li>}
-              {!readiness.hard && <li>• Solve {readinessScore.hardTarget - stats.byDifficulty.hard} more hard problems</li>}
-              {!readiness.mockTests && <li>• Complete {readinessScore.mockTestTarget} mock tests</li>}
-              {!readiness.pythonCourse && <li>• Finish Python course lessons</li>}
+              {!readinessData.readiness.easy && <li>• Solve {readinessData.targets.easy - readinessData.current.easy} more easy problems</li>}
+              {!readinessData.readiness.medium && <li>• Solve {readinessData.targets.medium - readinessData.current.medium} more medium problems</li>}
+              {!readinessData.readiness.hard && <li>• Solve {readinessData.targets.hard - readinessData.current.hard} more hard problems</li>}
+              {!readinessData.readiness.mockTests && <li>• Complete {readinessData.targets.mockTests - readinessData.current.mockTests} more mock tests</li>}
+              {!readinessData.readiness.pythonCourse && <li>• Finish {readinessData.targets.lessons - readinessData.current.lessons} more Python course lessons</li>}
             </ul>
           </div>
         )}

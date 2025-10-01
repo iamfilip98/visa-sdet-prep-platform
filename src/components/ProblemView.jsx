@@ -1,9 +1,11 @@
-import { useState } from 'react'
+import { useState, useEffect } from 'react'
 import { useParams, useNavigate } from 'react-router-dom'
-import { ChevronLeft, Lightbulb, CheckCircle, XCircle, Eye, EyeOff } from 'lucide-react'
+import { ChevronLeft, Lightbulb, CheckCircle, XCircle, Eye, EyeOff, Bug, TrendingUp } from 'lucide-react'
 import { problemDatabase } from '../data/problems'
 import CodeEditor from './CodeEditor'
-import { db } from '../utils/database'
+import { saveProblemSubmission, isProblemSolved } from '../utils/database'
+import TestCaseDebugger from './TestCaseDebugger'
+import SimilarProblems from './SimilarProblems'
 
 export default function ProblemView() {
   const { id } = useParams()
@@ -14,6 +16,17 @@ export default function ProblemView() {
   const [hintsRevealed, setHintsRevealed] = useState([])
   const [showSolution, setShowSolution] = useState(false)
   const [testResults, setTestResults] = useState([])
+  const [isSolved, setIsSolved] = useState(false)
+  const [currentCode, setCurrentCode] = useState('')
+  const [pyodideInstance, setPyodideInstance] = useState(null)
+
+  useEffect(() => {
+    async function checkSolved() {
+      const solved = await isProblemSolved(parseInt(id))
+      setIsSolved(solved)
+    }
+    checkSolved()
+  }, [id])
 
   if (!problem) {
     return (
@@ -109,20 +122,26 @@ json.dumps(result)
 
     // Save submission to database
     const passed = results.every(r => r.passed)
-    await db.submissions.add({
-      problemId: problem.id,
-      code,
-      language: 'python',
-      timestamp: new Date(),
-      passed,
-      score: passed ? 100 : (results.filter(r => r.passed).length / results.length) * 100
-    })
+    await saveProblemSubmission(problem.id, code, passed, results)
 
     if (passed) {
+      setIsSolved(true)
       alert('✓ All test cases passed! Great job!')
     } else {
       alert(`${results.filter(r => r.passed).length}/${results.length} test cases passed. Keep trying!`)
     }
+  }
+
+  const handleCodeChange = (code) => {
+    setCurrentCode(code)
+  }
+
+  const runDebugTest = async (testCase) => {
+    if (!pyodideInstance) {
+      alert('Please run tests first to initialize Python environment')
+      return null
+    }
+    return await runTests(currentCode, pyodideInstance)
   }
 
   return (
@@ -159,18 +178,18 @@ json.dumps(result)
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 mb-6">
-            {['description', 'hints', 'solution'].map(tab => (
+          <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto">
+            {['description', 'hints', 'solution', 'debug', 'similar'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 font-medium transition-colors ${
+                className={`px-4 py-2 font-medium transition-colors whitespace-nowrap ${
                   activeTab === tab
                     ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab === 'similar' ? 'Similar Problems' : tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
           </div>
@@ -306,6 +325,21 @@ json.dumps(result)
               )}
             </div>
           )}
+
+          {activeTab === 'debug' && (
+            <TestCaseDebugger
+              problem={problem}
+              testResults={testResults}
+              onRunTest={runDebugTest}
+            />
+          )}
+
+          {activeTab === 'similar' && (
+            <SimilarProblems
+              currentProblem={problem}
+              problemDatabase={problemDatabase}
+            />
+          )}
         </div>
       </div>
 
@@ -313,8 +347,15 @@ json.dumps(result)
       <div className="hidden lg:block w-1/2">
         <CodeEditor
           initialCode={problem.starterCode.python}
-          onRun={runTests}
-          onSubmit={handleSubmit}
+          onRun={(code, pyodide) => {
+            setPyodideInstance(pyodide)
+            return runTests(code, pyodide)
+          }}
+          onSubmit={(code, pyodide) => {
+            setPyodideInstance(pyodide)
+            return handleSubmit(code, pyodide)
+          }}
+          onChange={handleCodeChange}
           problemId={problem.id}
         />
       </div>
@@ -323,8 +364,15 @@ json.dumps(result)
       <div className="lg:hidden fixed bottom-0 left-0 right-0 h-1/2 border-t border-gray-200 dark:border-gray-700">
         <CodeEditor
           initialCode={problem.starterCode.python}
-          onRun={runTests}
-          onSubmit={handleSubmit}
+          onRun={(code, pyodide) => {
+            setPyodideInstance(pyodide)
+            return runTests(code, pyodide)
+          }}
+          onSubmit={(code, pyodide) => {
+            setPyodideInstance(pyodide)
+            return handleSubmit(code, pyodide)
+          }}
+          onChange={handleCodeChange}
           problemId={problem.id}
         />
       </div>

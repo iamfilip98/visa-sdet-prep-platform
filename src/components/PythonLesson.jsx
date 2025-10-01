@@ -1,8 +1,24 @@
 import { useParams, Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
 import { ArrowLeft, CheckCircle, Code } from 'lucide-react'
+import { markLessonComplete, isLessonComplete } from '../utils/database'
 
 export default function PythonLesson() {
   const { id } = useParams()
+  const [isCompleted, setIsCompleted] = useState(false)
+
+  useEffect(() => {
+    async function checkCompletion() {
+      const completed = await isLessonComplete(parseInt(id))
+      setIsCompleted(completed)
+    }
+    checkCompletion()
+  }, [id])
+
+  const handleMarkComplete = async () => {
+    await markLessonComplete(parseInt(id))
+    setIsCompleted(true)
+  }
 
   const lessons = {
     1: {
@@ -2935,17 +2951,32 @@ if result is None:
         ))}
       </div>
 
-      <div className="mt-8 flex justify-between">
+      <div className="mt-8 flex flex-col sm:flex-row justify-between gap-4">
         <Link to="/python-course" className="btn-secondary">
           <ArrowLeft size={16} />
           Back to Course
         </Link>
-        {parseInt(id) < 14 && (
-          <Link to={`/python-course/lesson/${parseInt(id) + 1}`} className="btn-primary">
-            Next Lesson
-            <ArrowLeft size={16} className="rotate-180" />
-          </Link>
-        )}
+
+        <div className="flex gap-3">
+          {!isCompleted ? (
+            <button onClick={handleMarkComplete} className="btn-primary bg-green-600 hover:bg-green-700">
+              <CheckCircle size={16} />
+              Mark as Complete
+            </button>
+          ) : (
+            <div className="flex items-center gap-2 px-4 py-2 bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-200 rounded-lg">
+              <CheckCircle size={16} />
+              <span className="font-semibold">Completed!</span>
+            </div>
+          )}
+
+          {parseInt(id) < 14 && (
+            <Link to={`/python-course/lesson/${parseInt(id) + 1}`} className="btn-primary">
+              Next Lesson
+              <ArrowLeft size={16} className="rotate-180" />
+            </Link>
+          )}
+        </div>
       </div>
     </div>
   )

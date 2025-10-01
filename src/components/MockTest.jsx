@@ -2,23 +2,34 @@ import { useState, useEffect } from 'react'
 import { Clock, AlertCircle, CheckCircle } from 'lucide-react'
 import { problemDatabase } from '../data/problems'
 import { useNavigate } from 'react-router-dom'
+import { saveMockTest } from '../utils/database'
 
 export default function MockTest() {
   const navigate = useNavigate()
   const [testStarted, setTestStarted] = useState(false)
   const [timeRemaining, setTimeRemaining] = useState(70 * 60) // 70 minutes in seconds
   const [selectedProblems, setSelectedProblems] = useState([])
+  const [problemTimes, setProblemTimes] = useState({}) // Track time per problem
+  const [currentProblem, setCurrentProblem] = useState(null) // Track which problem user is on
+  const [startTime, setStartTime] = useState(null)
 
   useEffect(() => {
     if (testStarted && timeRemaining > 0) {
       const timer = setInterval(() => {
         setTimeRemaining(prev => prev - 1)
+        // Update time for current problem
+        if (currentProblem !== null) {
+          setProblemTimes(prev => ({
+            ...prev,
+            [currentProblem]: (prev[currentProblem] || 0) + 1
+          }))
+        }
       }, 1000)
       return () => clearInterval(timer)
     } else if (timeRemaining === 0) {
-      alert('Time\'s up! Your test has ended.')
+      handleEndTest()
     }
-  }, [testStarted, timeRemaining])
+  }, [testStarted, timeRemaining, currentProblem])
 
   const startTest = () => {
     // Select 4 problems: 1 easy, 2 medium, 1 hard
@@ -35,6 +46,34 @@ export default function MockTest() {
 
     setSelectedProblems(selected)
     setTestStarted(true)
+    setStartTime(new Date())
+
+    // Initialize time tracking for each problem
+    const initialTimes = {}
+    selected.forEach((p, idx) => {
+      initialTimes[idx] = 0
+    })
+    setProblemTimes(initialTimes)
+  }
+
+  const handleEndTest = async () => {
+    const duration = 70 * 60 - timeRemaining // Time spent in seconds
+
+    // Calculate score based on problems solved (simplified)
+    // In production, this would check actual submissions
+    const score = Math.floor(Math.random() * 400) + 200 // Placeholder 200-600
+
+    const testData = {
+      duration,
+      score,
+      problems: selectedProblems.map(p => p.id),
+      submissions: [], // Would contain actual submission data
+      timeSpent: problemTimes,
+      passed: score >= 300
+    }
+
+    await saveMockTest(testData)
+    navigate('/analytics') // Or navigate to results page
   }
 
   const formatTime = (seconds) => {
@@ -165,7 +204,10 @@ export default function MockTest() {
         {selectedProblems.map((problem, idx) => (
           <div
             key={problem.id}
-            onClick={() => navigate(`/problem/${problem.id}`)}
+            onClick={() => {
+              setCurrentProblem(idx)
+              navigate(`/problem/${problem.id}`)
+            }}
             className="card-hover cursor-pointer"
           >
             <div className="flex items-start justify-between mb-3">
@@ -206,6 +248,16 @@ export default function MockTest() {
             </ul>
           </div>
         </div>
+      </div>
+
+      {/* End Test Button */}
+      <div className="mt-6 text-center">
+        <button
+          onClick={handleEndTest}
+          className="px-8 py-3 bg-red-600 hover:bg-red-700 text-white font-semibold rounded-lg transition-colors"
+        >
+          End Test & View Results
+        </button>
       </div>
     </div>
   )
