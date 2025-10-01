@@ -94,18 +94,18 @@ export default function Dashboard() {
 
         <div className="space-y-2">
           {readinessItems.map((item, idx) => (
-            <div key={idx} className="flex items-center justify-between p-3 bg-white dark:bg-gray-800 rounded-lg">
-              <div className="flex items-center gap-3">
+            <div key={idx} className="flex items-center justify-between gap-3 p-3 bg-white dark:bg-gray-800 rounded-lg">
+              <div className="flex items-center gap-3 min-w-0 flex-1">
                 {item.met ? (
-                  <CheckCircle className="text-green-500" size={20} />
+                  <CheckCircle className="text-green-500 flex-shrink-0" size={20} />
                 ) : (
-                  <XCircle className="text-gray-400" size={20} />
+                  <XCircle className="text-gray-400 flex-shrink-0" size={20} />
                 )}
-                <span className={item.met ? 'font-semibold' : 'text-gray-600 dark:text-gray-400'}>
+                <span className={`${item.met ? 'font-semibold' : 'text-gray-600 dark:text-gray-400'} truncate`}>
                   {item.name}
                 </span>
               </div>
-              <span className={`text-sm ${item.met ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}`}>
+              <span className={`text-sm whitespace-nowrap ${item.met ? 'text-green-600 dark:text-green-400' : 'text-gray-500'}`}>
                 {item.current}/{item.target}
               </span>
             </div>
@@ -129,9 +129,9 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-4 gap-6 mb-8">
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
         <div className="card">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Problems Solved</p>
               <p className="text-3xl font-bold">{stats.totalSolved}</p>
@@ -139,10 +139,8 @@ export default function Dashboard() {
             </div>
             <Trophy className="text-yellow-500" size={40} />
           </div>
-          <div className="mt-4">
-            <div className="progress-bar">
-              <div className="progress-fill bg-yellow-500" style={{ width: `${progressPercent}%` }}></div>
-            </div>
+          <div className="progress-bar">
+            <div className="progress-fill bg-yellow-500" style={{ width: `${progressPercent}%` }}></div>
           </div>
         </div>
 
