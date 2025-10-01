@@ -130,7 +130,7 @@ export default function Dashboard() {
 
       {/* Stats Cards */}
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="card">
+        <div className="card min-w-0">
           <div className="flex items-center justify-between mb-4">
             <div>
               <p className="text-sm text-gray-600 dark:text-gray-400">Problems Solved</p>
@@ -139,7 +139,7 @@ export default function Dashboard() {
             </div>
             <Trophy className="text-yellow-500" size={40} />
           </div>
-          <div className="progress-bar">
+          <div className="progress-bar overflow-hidden">
             <div className="progress-fill bg-yellow-500" style={{ width: `${progressPercent}%` }}></div>
           </div>
         </div>

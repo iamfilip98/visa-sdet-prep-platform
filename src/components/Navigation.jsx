@@ -7,8 +7,8 @@ export default function Navigation({ darkMode, setDarkMode }) {
   const navItems = [
     { path: '/', icon: Home, label: 'Dashboard' },
     { path: '/problems', icon: Code, label: 'Problems' },
-    { path: '/mock-test', icon: Clock, label: 'Mock Test' },
-    { path: '/python-course', icon: BookOpen, label: 'Python' },
+    { path: '/mock-test', icon: Clock, label: 'Mock\u00A0Test' },
+    { path: '/python-course', icon: BookOpen, label: 'Python\u00A0Course' },
     { path: '/templates', icon: FileCode, label: 'Templates' },
     { path: '/pitfalls', icon: AlertTriangle, label: 'Checklist' },
     { path: '/analytics', icon: BarChart3, label: 'Stats' },
@@ -33,14 +33,14 @@ export default function Navigation({ darkMode, setDarkMode }) {
               <Link
                 key={path}
                 to={path}
-                className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors ${
+                className={`flex items-center gap-2 px-3 py-2 rounded-lg transition-colors whitespace-nowrap ${
                   location.pathname === path
                     ? 'bg-blue-50 dark:bg-blue-900 text-blue-600 dark:text-blue-400 font-medium'
                     : 'text-gray-600 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-700'
                 }`}
               >
                 <Icon size={18} />
-                <span className="hidden md:inline">{label}</span>
+                <span className="hidden lg:inline text-sm">{label}</span>
               </Link>
             ))}
 
