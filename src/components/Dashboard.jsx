@@ -67,11 +67,11 @@ export default function Dashboard() {
   ]
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-8">
+    <div className="max-w-7xl mx-auto px-3 sm:px-4 py-4 sm:py-8">
       {/* Hero Section */}
-      <div className="mb-8">
-        <h1 className="text-4xl font-bold mb-2">Welcome to Your Prep Platform</h1>
-        <p className="text-gray-600 dark:text-gray-400">
+      <div className="mb-4 sm:mb-8">
+        <h1 className="text-2xl sm:text-4xl font-bold mb-2">Welcome to Your Prep Platform</h1>
+        <p className="text-sm sm:text-base text-gray-600 dark:text-gray-400">
           Everything you need to ace the Visa SDET CodeSignal assessment
         </p>
       </div>
@@ -129,49 +129,52 @@ export default function Dashboard() {
       </div>
 
       {/* Stats Cards */}
-      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
-        <div className="card min-w-0">
-          <div className="flex items-center justify-between mb-4">
-            <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Problems Solved</p>
-              <p className="text-3xl font-bold">{stats.totalSolved}</p>
-              <p className="text-xs text-gray-500">of {totalProblems} total</p>
+      <div className="grid grid-cols-2 sm:grid-cols-2 lg:grid-cols-4 gap-3 sm:gap-6 mb-4 sm:mb-8">
+        <div className="card min-w-0 p-3 sm:p-6">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center sm:justify-between mb-2 sm:mb-4">
+            <div className="flex items-center justify-between w-full sm:w-auto">
+              <div>
+                <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Problems</p>
+                <p className="text-2xl sm:text-3xl font-bold">{stats.totalSolved}</p>
+                <p className="text-[10px] sm:text-xs text-gray-500">of {totalProblems}</p>
+              </div>
+              <Trophy className="text-yellow-500 sm:hidden" size={32} />
             </div>
-            <Trophy className="text-yellow-500" size={40} />
+            <Trophy className="hidden sm:block text-yellow-500" size={40} />
           </div>
           <div className="progress-bar overflow-hidden">
             <div className="progress-fill bg-yellow-500" style={{ width: `${progressPercent}%` }}></div>
           </div>
         </div>
 
-        <div className="card">
+        <div className="card p-3 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Current Streak</p>
-              <p className="text-3xl font-bold">{stats.streak}</p>
-              <p className="text-xs text-gray-500">days</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Streak</p>
+              <p className="text-2xl sm:text-3xl font-bold">{stats.streak}</p>
+              <p className="text-[10px] sm:text-xs text-gray-500">days</p>
             </div>
-            <Flame className="text-orange-500" size={40} />
+            <Flame className="text-orange-500" size={32} sm:size={40} />
           </div>
         </div>
 
-        <div className="card">
+        <div className="card p-3 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Easy Solved</p>
-              <p className="text-3xl font-bold text-green-500">{stats.byDifficulty.easy}</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Easy</p>
+              <p className="text-2xl sm:text-3xl font-bold text-green-500">{stats.byDifficulty.easy}</p>
             </div>
-            <Target className="text-green-500" size={40} />
+            <Target className="text-green-500" size={32} sm:size={40} />
           </div>
         </div>
 
-        <div className="card">
+        <div className="card p-3 sm:p-6">
           <div className="flex items-center justify-between">
             <div>
-              <p className="text-sm text-gray-600 dark:text-gray-400">Medium Solved</p>
-              <p className="text-3xl font-bold text-yellow-500">{stats.byDifficulty.medium}</p>
+              <p className="text-xs sm:text-sm text-gray-600 dark:text-gray-400">Medium</p>
+              <p className="text-2xl sm:text-3xl font-bold text-yellow-500">{stats.byDifficulty.medium}</p>
             </div>
-            <Target className="text-yellow-500" size={40} />
+            <Target className="text-yellow-500" size={32} sm:size={40} />
           </div>
         </div>
       </div>

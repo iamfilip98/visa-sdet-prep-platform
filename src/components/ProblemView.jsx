@@ -145,10 +145,10 @@ json.dumps(result)
   }
 
   return (
-    <div className="h-[calc(100vh-4rem)] flex">
+    <div className="h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] flex flex-col lg:flex-row">
       {/* Left Panel - Problem Description */}
-      <div className="w-full lg:w-1/2 overflow-y-auto bg-white dark:bg-gray-900 border-r border-gray-200 dark:border-gray-700">
-        <div className="p-6">
+      <div className="w-full lg:w-1/2 overflow-y-auto bg-white dark:bg-gray-900 lg:border-r border-gray-200 dark:border-gray-700 flex-shrink-0">
+        <div className="p-3 sm:p-6">
           {/* Back Button */}
           <button
             onClick={() => navigate('/problems')}
@@ -159,37 +159,37 @@ json.dumps(result)
           </button>
 
           {/* Problem Header */}
-          <div className="mb-6">
-            <h1 className="text-3xl font-bold mb-3">{problem.title}</h1>
-            <div className="flex items-center gap-3 flex-wrap">
+          <div className="mb-4 sm:mb-6">
+            <h1 className="text-xl sm:text-3xl font-bold mb-2 sm:mb-3">{problem.title}</h1>
+            <div className="flex items-center gap-2 sm:gap-3 flex-wrap text-xs sm:text-sm">
               <span className={`badge badge-${problem.difficulty}`}>
                 {problem.difficulty.charAt(0).toUpperCase() + problem.difficulty.slice(1)}
               </span>
               <span className="badge badge-visa">
-                🔥 Visa: {problem.visaFrequency}
+                🔥 {problem.visaFrequency}
               </span>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
-                ⏱️ {problem.timeEstimate} min
+              <span className="text-gray-600 dark:text-gray-400">
+                ⏱️ {problem.timeEstimate}m
               </span>
-              <span className="text-sm text-gray-600 dark:text-gray-400">
+              <span className="text-gray-600 dark:text-gray-400">
                 📁 {problem.category}
               </span>
             </div>
           </div>
 
           {/* Tabs */}
-          <div className="flex gap-2 border-b border-gray-200 dark:border-gray-700 mb-6 overflow-x-auto">
+          <div className="flex gap-1 sm:gap-2 border-b border-gray-200 dark:border-gray-700 mb-4 sm:mb-6 overflow-x-auto scrollbar-thin">
             {['description', 'hints', 'solution', 'debug', 'similar'].map(tab => (
               <button
                 key={tab}
                 onClick={() => setActiveTab(tab)}
-                className={`px-4 py-2 font-medium transition-colors whitespace-nowrap ${
+                className={`px-3 sm:px-4 py-2 text-sm sm:text-base font-medium transition-colors whitespace-nowrap min-w-[80px] sm:min-w-0 ${
                   activeTab === tab
                     ? 'border-b-2 border-blue-500 text-blue-600 dark:text-blue-400'
                     : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-100'
                 }`}
               >
-                {tab === 'similar' ? 'Similar Problems' : tab.charAt(0).toUpperCase() + tab.slice(1)}
+                {tab === 'similar' ? 'Similar' : tab.charAt(0).toUpperCase() + tab.slice(1)}
               </button>
             ))}
           </div>
@@ -361,7 +361,7 @@ json.dumps(result)
       </div>
 
       {/* Mobile: Show editor below on small screens */}
-      <div className="lg:hidden fixed bottom-0 left-0 right-0 h-1/2 border-t border-gray-200 dark:border-gray-700">
+      <div className="lg:hidden w-full h-[50vh] border-t border-gray-200 dark:border-gray-700 flex-shrink-0">
         <CodeEditor
           initialCode={problem.starterCode.python}
           onRun={(code, pyodide) => {
