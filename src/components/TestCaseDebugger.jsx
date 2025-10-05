@@ -1,9 +1,10 @@
 import { Bug, CheckCircle, XCircle, AlertCircle, Play } from 'lucide-react'
 import { useState } from 'react'
 
-export default function TestCaseDebugger({ problem, testResults }) {
+export default function TestCaseDebugger({ problem, testResults, userCode, pyodide }) {
   const [selectedTest, setSelectedTest] = useState(null)
   const [debugOutput, setDebugOutput] = useState(null)
+  const [isRunning, setIsRunning] = useState(false)
 
   const selectTestCase = (index) => {
     setSelectedTest(index)
@@ -24,6 +25,64 @@ export default function TestCaseDebugger({ problem, testResults }) {
     }
   }
 
+  const runTestCase = async (index) => {
+    if (!userCode || !pyodide) {
+      setDebugOutput({
+        error: 'No code to run. Please write your solution first.',
+        passed: false
+      })
+      return
+    }
+
+    setIsRunning(true)
+    const testCase = testCases[index]
+
+    try {
+      // Extract function name from code
+      const funcMatch = userCode.match(/def\s+(\w+)\s*\(/)
+      if (!funcMatch) {
+        setDebugOutput({
+          error: 'No function definition found in your code',
+          passed: false,
+          expected: testCase.output
+        })
+        setIsRunning(false)
+        return
+      }
+
+      const funcName = funcMatch[1]
+
+      // Execute code with test input
+      await pyodide.runPythonAsync(userCode)
+
+      // Call function with test input and capture output
+      const inputStr = JSON.stringify(testCase.input)
+      const result = await pyodide.runPythonAsync(`
+import json
+result = ${funcName}(*json.loads('${inputStr}'))
+json.dumps(result)
+      `)
+
+      const actualOutput = JSON.parse(result)
+      const passed = JSON.stringify(actualOutput) === JSON.stringify(testCase.output)
+
+      setDebugOutput({
+        passed,
+        result: actualOutput,
+        expected: testCase.output,
+        error: null
+      })
+    } catch (error) {
+      setDebugOutput({
+        error: error.message,
+        passed: false,
+        expected: testCase.output
+      })
+    } finally {
+      setIsRunning(false)
+    }
+  }
+
   const testCases = problem?.testCases || []
 
   return (
@@ -41,30 +100,41 @@ export default function TestCaseDebugger({ problem, testResults }) {
             {testCases.map((testCase, idx) => {
               const result = testResults && testResults[idx]
               return (
-                <button
-                  key={idx}
-                  onClick={() => selectTestCase(idx)}
-                  className={`w-full p-3 rounded-lg border-2 text-left transition-colors ${
-                    selectedTest === idx
-                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                      : 'border-gray-300 dark:border-gray-600 hover:border-blue-400'
-                  }`}
-                >
-                  <div className="flex items-center justify-between mb-2">
-                    <span className="font-medium">Test Case {idx + 1}</span>
-                    {result && (
-                      result.passed ? (
-                        <CheckCircle className="text-green-500" size={20} />
-                      ) : (
-                        <XCircle className="text-red-500" size={20} />
-                      )
-                    )}
-                  </div>
-                  <div className="text-sm text-gray-600 dark:text-gray-400">
-                    <p className="font-mono truncate">Input: {JSON.stringify(testCase.input)}</p>
-                    <p className="font-mono truncate">Expected: {JSON.stringify(testCase.output)}</p>
-                  </div>
-                </button>
+                <div key={idx} className="space-y-2">
+                  <button
+                    onClick={() => selectTestCase(idx)}
+                    className={`w-full p-3 rounded-lg border-2 text-left transition-colors ${
+                      selectedTest === idx
+                        ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                        : 'border-gray-300 dark:border-gray-600 hover:border-blue-400'
+                    }`}
+                  >
+                    <div className="flex items-center justify-between mb-2">
+                      <span className="font-medium">Test Case {idx + 1}</span>
+                      {result && (
+                        result.passed ? (
+                          <CheckCircle className="text-green-500" size={20} />
+                        ) : (
+                          <XCircle className="text-red-500" size={20} />
+                        )
+                      )}
+                    </div>
+                    <div className="text-sm text-gray-600 dark:text-gray-400">
+                      <p className="font-mono truncate">Input: {JSON.stringify(testCase.input)}</p>
+                      <p className="font-mono truncate">Expected: {JSON.stringify(testCase.output)}</p>
+                    </div>
+                  </button>
+                  {selectedTest === idx && userCode && pyodide && (
+                    <button
+                      onClick={() => runTestCase(idx)}
+                      disabled={isRunning}
+                      className="w-full px-3 py-2 bg-orange-500 hover:bg-orange-600 text-white rounded-lg font-medium transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+                    >
+                      <Play size={16} />
+                      {isRunning ? 'Running...' : 'Run This Test Case'}
+                    </button>
+                  )}
+                </div>
               )
             })}
           </div>
@@ -74,21 +144,14 @@ export default function TestCaseDebugger({ problem, testResults }) {
         <div>
           <h4 className="font-semibold mb-3">Debug Information</h4>
 
-          {!testResults || testResults.length === 0 ? (
-            <div className="p-6 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-center border-2 border-yellow-200 dark:border-yellow-700">
-              <AlertCircle className="mx-auto mb-2 text-yellow-600 dark:text-yellow-400" size={32} />
-              <p className="text-yellow-800 dark:text-yellow-200 font-medium mb-2">
-                No test results yet
-              </p>
-              <p className="text-yellow-700 dark:text-yellow-300 text-sm">
-                Run your code first to see debugging information
-              </p>
-            </div>
-          ) : !debugOutput ? (
+          {!debugOutput ? (
             <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg text-center">
               <Play className="mx-auto mb-2 text-gray-400" size={32} />
-              <p className="text-gray-600 dark:text-gray-400">
-                Select a test case to see detailed results
+              <p className="text-gray-600 dark:text-gray-400 mb-2">
+                Select a test case and click "Run This Test Case"
+              </p>
+              <p className="text-xs text-gray-500 dark:text-gray-500">
+                {userCode && pyodide ? 'Your code is ready to test' : 'Write your solution in the editor first'}
               </p>
             </div>
           ) : (

@@ -323,6 +323,8 @@ json.dumps(result)
             <TestCaseDebugger
               problem={problem}
               testResults={testResults}
+              userCode={currentCode}
+              pyodide={pyodideInstance}
             />
           )}
 
