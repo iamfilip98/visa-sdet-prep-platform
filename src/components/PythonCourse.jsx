@@ -1,7 +1,19 @@
 import { BookOpen, CheckCircle, Play } from 'lucide-react'
 import { Link } from 'react-router-dom'
+import { useState, useEffect } from 'react'
+import { getCompletedLessons } from '../utils/database'
 
 export default function PythonCourse() {
+  const [completedLessons, setCompletedLessons] = useState(new Set())
+
+  useEffect(() => {
+    async function loadCompletedLessons() {
+      const completed = await getCompletedLessons()
+      setCompletedLessons(completed)
+    }
+    loadCompletedLessons()
+  }, [])
+
   const lessons = [
     {
       id: 1,
@@ -9,7 +21,6 @@ export default function PythonCourse() {
       description: 'Variables, data types, and basic operations',
       duration: '15 min',
       problems: 4,
-      completed: false,
     },
     {
       id: 2,
@@ -17,7 +28,6 @@ export default function PythonCourse() {
       description: 'If statements, loops (for/while), break/continue',
       duration: '12 min',
       problems: 4,
-      completed: false,
     },
     {
       id: 3,
@@ -25,7 +35,6 @@ export default function PythonCourse() {
       description: 'Function syntax, parameters, return values, lambda',
       duration: '10 min',
       problems: 3,
-      completed: false,
     },
     {
       id: 4,
@@ -33,7 +42,6 @@ export default function PythonCourse() {
       description: 'Learn Counter, defaultdict, and deque - essential for CodeSignal',
       duration: '20 min',
       problems: 5,
-      completed: false,
     },
     {
       id: 5,
@@ -41,7 +49,6 @@ export default function PythonCourse() {
       description: 'Write Pythonic code that saves time',
       duration: '15 min',
       problems: 5,
-      completed: false,
     },
     {
       id: 6,
@@ -49,7 +56,6 @@ export default function PythonCourse() {
       description: 'sorted(), enumerate(), zip(), map(), filter()',
       duration: '15 min',
       problems: 5,
-      completed: false,
     },
     {
       id: 7,
@@ -57,7 +63,6 @@ export default function PythonCourse() {
       description: 'split(), join(), strip() and string slicing',
       duration: '10 min',
       problems: 3,
-      completed: false,
     },
     {
       id: 8,
@@ -65,7 +70,6 @@ export default function PythonCourse() {
       description: 'Fast lookups and set arithmetic',
       duration: '10 min',
       problems: 3,
-      completed: false,
     },
     {
       id: 9,
@@ -73,7 +77,6 @@ export default function PythonCourse() {
       description: 'Master the technique that solves 40% of array problems',
       duration: '15 min',
       problems: 4,
-      completed: false,
     },
     {
       id: 10,
@@ -81,7 +84,6 @@ export default function PythonCourse() {
       description: 'Optimize substring and subarray problems',
       duration: '15 min',
       problems: 4,
-      completed: false,
     },
     {
       id: 11,
@@ -89,7 +91,6 @@ export default function PythonCourse() {
       description: 'THE MOST CRITICAL - 70% of Q4 requires this!',
       duration: '25 min',
       problems: 6,
-      completed: false,
     },
     {
       id: 12,
@@ -97,7 +98,6 @@ export default function PythonCourse() {
       description: 'Catch the bugs before they fail hidden tests',
       duration: '10 min',
       problems: 0,
-      completed: false,
     },
     {
       id: 13,
@@ -105,7 +105,6 @@ export default function PythonCourse() {
       description: 'Step-by-step approach to tackle any problem',
       duration: '12 min',
       problems: 0,
-      completed: false,
     },
     {
       id: 14,
@@ -113,7 +112,6 @@ export default function PythonCourse() {
       description: 'Avoid common mistakes that cost precious time',
       duration: '8 min',
       problems: 0,
-      completed: false,
     },
   ]
 
@@ -151,17 +149,19 @@ export default function PythonCourse() {
 
       {/* Lessons */}
       <div className="space-y-4 mb-8">
-        {lessons.map((lesson) => (
-          <div key={lesson.id} className="card-hover">
-            <div className="flex items-center justify-between">
-              <div className="flex items-center gap-4">
-                <div className={`p-3 rounded-lg ${lesson.completed ? 'bg-green-100 dark:bg-green-900/20' : 'bg-gray-100 dark:bg-gray-800'}`}>
-                  {lesson.completed ? (
-                    <CheckCircle className="text-green-500" size={24} />
-                  ) : (
-                    <BookOpen className="text-gray-400" size={24} />
-                  )}
-                </div>
+        {lessons.map((lesson) => {
+          const isCompleted = completedLessons.has(lesson.id)
+          return (
+            <div key={lesson.id} className="card-hover">
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-4">
+                  <div className={`p-3 rounded-lg ${isCompleted ? 'bg-green-100 dark:bg-green-900/20' : 'bg-gray-100 dark:bg-gray-800'}`}>
+                    {isCompleted ? (
+                      <CheckCircle className="text-green-500" size={24} />
+                    ) : (
+                      <BookOpen className="text-gray-400" size={24} />
+                    )}
+                  </div>
 
                 <div>
                   <h3 className="font-semibold text-lg mb-1">{lesson.title}</h3>
@@ -175,13 +175,14 @@ export default function PythonCourse() {
                 </div>
               </div>
 
-              <Link to={`/python-course/lesson/${lesson.id}`} className="btn-primary">
-                <Play size={16} />
-                Start
-              </Link>
+                <Link to={`/python-course/lesson/${lesson.id}`} className="btn-primary">
+                  <Play size={16} />
+                  {isCompleted ? 'Review' : 'Start'}
+                </Link>
+              </div>
             </div>
-          </div>
-        ))}
+          )
+        })}
       </div>
 
       {/* Quick Reference */}

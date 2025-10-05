@@ -182,11 +182,26 @@ export const getLatestMockTest = async () => {
 
 // Python lesson tracking
 export const markLessonComplete = async (lessonId) => {
-  await db.pythonLessons.put({
-    lessonId,
-    completed: true,
-    timestamp: new Date()
-  });
+  // Check if lesson already exists
+  const existing = await db.pythonLessons
+    .where('lessonId')
+    .equals(lessonId)
+    .first();
+
+  if (existing) {
+    // Update existing record
+    await db.pythonLessons.update(existing.id, {
+      completed: true,
+      timestamp: new Date()
+    });
+  } else {
+    // Add new record
+    await db.pythonLessons.add({
+      lessonId,
+      completed: true,
+      timestamp: new Date()
+    });
+  }
 };
 
 export const isLessonComplete = async (lessonId) => {
