@@ -136,13 +136,6 @@ json.dumps(result)
     setCurrentCode(code)
   }
 
-  const runDebugTest = async (testCase) => {
-    if (!pyodideInstance) {
-      alert('Please run tests first to initialize Python environment')
-      return null
-    }
-    return await runTests(currentCode, pyodideInstance)
-  }
 
   return (
     <div className="h-[calc(100vh-3.5rem)] sm:h-[calc(100vh-4rem)] flex flex-col lg:flex-row">
@@ -330,7 +323,6 @@ json.dumps(result)
             <TestCaseDebugger
               problem={problem}
               testResults={testResults}
-              onRunTest={runDebugTest}
             />
           )}
 

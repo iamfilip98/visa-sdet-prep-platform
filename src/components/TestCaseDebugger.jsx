@@ -1,54 +1,30 @@
 import { Bug, CheckCircle, XCircle, AlertCircle, Play } from 'lucide-react'
 import { useState } from 'react'
 
-export default function TestCaseDebugger({ testCases, userCode, onRunTest }) {
+export default function TestCaseDebugger({ problem, testResults }) {
   const [selectedTest, setSelectedTest] = useState(null)
   const [debugOutput, setDebugOutput] = useState(null)
-  const [isRunning, setIsRunning] = useState(false)
 
-  const runWithDebug = async (testCase, index) => {
-    setIsRunning(true)
+  const selectTestCase = (index) => {
     setSelectedTest(index)
 
-    // Add debug instrumentation to user code
-    const instrumentedCode = `
-# Debug instrumentation
-debug_log = []
-
-def debug_print(msg):
-    debug_log.append(str(msg))
-
-${userCode}
-
-# Run with test case
-try:
-    input_data = ${JSON.stringify(testCase.input)}
-    result = solution(*input_data) if isinstance(input_data, list) else solution(input_data)
-    output = {
-        'result': result,
-        'expected': ${JSON.stringify(testCase.output)},
-        'debug_log': debug_log,
-        'passed': result == ${JSON.stringify(testCase.output)}
+    // Find the corresponding test result if tests have been run
+    if (testResults && testResults.length > 0) {
+      const result = testResults[index]
+      if (result) {
+        setDebugOutput({
+          passed: result.passed,
+          result: result.actual,
+          expected: result.expected,
+          error: typeof result.actual === 'string' && result.actual.startsWith('Error:') ? result.actual : null
+        })
+      }
+    } else {
+      setDebugOutput(null)
     }
-except Exception as e:
-    output = {
-        'error': str(e),
-        'debug_log': debug_log,
-        'passed': False
-    }
-
-output
-`
-
-    try {
-      const result = await onRunTest(instrumentedCode)
-      setDebugOutput(result)
-    } catch (error) {
-      setDebugOutput({ error: error.message, passed: false })
-    }
-
-    setIsRunning(false)
   }
+
+  const testCases = problem?.testCases || []
 
   return (
     <div className="space-y-4">
@@ -62,33 +38,35 @@ output
         <div>
           <h4 className="font-semibold mb-3">Available Test Cases</h4>
           <div className="space-y-2">
-            {testCases.map((testCase, idx) => (
-              <button
-                key={idx}
-                onClick={() => runWithDebug(testCase, idx)}
-                disabled={isRunning}
-                className={`w-full p-3 rounded-lg border-2 text-left transition-all ${
-                  selectedTest === idx
-                    ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
-                    : 'border-gray-300 dark:border-gray-600 hover:border-blue-400'
-                } ${isRunning ? 'opacity-50 cursor-not-allowed' : 'cursor-pointer'}`}
-              >
-                <div className="flex items-center justify-between mb-2">
-                  <span className="font-medium">Test Case {idx + 1}</span>
-                  {debugOutput && selectedTest === idx && (
-                    debugOutput.passed ? (
-                      <CheckCircle className="text-green-500" size={20} />
-                    ) : (
-                      <XCircle className="text-red-500" size={20} />
-                    )
-                  )}
-                </div>
-                <div className="text-sm text-gray-600 dark:text-gray-400">
-                  <p className="font-mono">Input: {JSON.stringify(testCase.input)}</p>
-                  <p className="font-mono">Expected: {JSON.stringify(testCase.output)}</p>
-                </div>
-              </button>
-            ))}
+            {testCases.map((testCase, idx) => {
+              const result = testResults && testResults[idx]
+              return (
+                <button
+                  key={idx}
+                  onClick={() => selectTestCase(idx)}
+                  className={`w-full p-3 rounded-lg border-2 text-left transition-colors ${
+                    selectedTest === idx
+                      ? 'border-blue-500 bg-blue-50 dark:bg-blue-900/20'
+                      : 'border-gray-300 dark:border-gray-600 hover:border-blue-400'
+                  }`}
+                >
+                  <div className="flex items-center justify-between mb-2">
+                    <span className="font-medium">Test Case {idx + 1}</span>
+                    {result && (
+                      result.passed ? (
+                        <CheckCircle className="text-green-500" size={20} />
+                      ) : (
+                        <XCircle className="text-red-500" size={20} />
+                      )
+                    )}
+                  </div>
+                  <div className="text-sm text-gray-600 dark:text-gray-400">
+                    <p className="font-mono truncate">Input: {JSON.stringify(testCase.input)}</p>
+                    <p className="font-mono truncate">Expected: {JSON.stringify(testCase.output)}</p>
+                  </div>
+                </button>
+              )
+            })}
           </div>
         </div>
 
@@ -96,23 +74,24 @@ output
         <div>
           <h4 className="font-semibold mb-3">Debug Information</h4>
 
-          {!debugOutput && (
+          {!testResults || testResults.length === 0 ? (
+            <div className="p-6 bg-yellow-50 dark:bg-yellow-900/20 rounded-lg text-center border-2 border-yellow-200 dark:border-yellow-700">
+              <AlertCircle className="mx-auto mb-2 text-yellow-600 dark:text-yellow-400" size={32} />
+              <p className="text-yellow-800 dark:text-yellow-200 font-medium mb-2">
+                No test results yet
+              </p>
+              <p className="text-yellow-700 dark:text-yellow-300 text-sm">
+                Run your code first to see debugging information
+              </p>
+            </div>
+          ) : !debugOutput ? (
             <div className="p-6 bg-gray-50 dark:bg-gray-800 rounded-lg text-center">
               <Play className="mx-auto mb-2 text-gray-400" size={32} />
               <p className="text-gray-600 dark:text-gray-400">
-                Select a test case to see debug output
+                Select a test case to see detailed results
               </p>
             </div>
-          )}
-
-          {isRunning && (
-            <div className="p-6 bg-blue-50 dark:bg-blue-900/20 rounded-lg text-center">
-              <div className="animate-spin mx-auto mb-2 h-8 w-8 border-4 border-blue-500 border-t-transparent rounded-full"></div>
-              <p className="text-blue-800 dark:text-blue-200">Running test...</p>
-            </div>
-          )}
-
-          {debugOutput && !isRunning && (
+          ) : (
             <div className="space-y-3">
               {/* Result */}
               <div className={`p-4 rounded-lg ${
@@ -155,33 +134,18 @@ output
                 )}
               </div>
 
-              {/* Debug Log */}
-              {debugOutput.debug_log && debugOutput.debug_log.length > 0 && (
-                <div className="p-4 bg-gray-50 dark:bg-gray-800 rounded-lg">
-                  <h5 className="font-semibold mb-2 flex items-center gap-2">
-                    <AlertCircle size={16} />
-                    Debug Output
-                  </h5>
-                  <div className="space-y-1 text-sm font-mono">
-                    {debugOutput.debug_log.map((log, idx) => (
-                      <div key={idx} className="p-2 bg-white dark:bg-gray-900 rounded">
-                        {log}
-                      </div>
-                    ))}
-                  </div>
-                </div>
-              )}
-
               {/* Helpful Tips */}
               <div className="p-3 bg-blue-50 dark:bg-blue-900/20 rounded-lg">
                 <p className="text-sm text-blue-800 dark:text-blue-200">
                   <strong>💡 Debugging Tips:</strong>
                 </p>
                 <ul className="text-sm text-blue-700 dark:text-blue-300 mt-1 space-y-1 list-disc list-inside">
-                  <li>Add debug_print() calls to trace execution</li>
+                  <li>Add print() statements to trace execution</li>
                   <li>Check variable values at each step</li>
                   <li>Verify loop iterations and conditions</li>
                   <li>Test edge cases separately</li>
+                  <li>Check if your function handles empty inputs</li>
+                  <li>Verify your return statement is correct</li>
                 </ul>
               </div>
             </div>
