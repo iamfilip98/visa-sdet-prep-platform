@@ -44,7 +44,7 @@ print(sum_with_neighbors([1, 2, 3, 4]))  # [3, 6, 9, 7]`
     testCases: [
       { input: [[1, 2, 3, 4]], output: [3, 6, 9, 7] },
       { input: [[5]], output: [5] },
-      { input: [[1, 1]], output: [1, 2] },
+      { input: [[1, 1]], output: [2, 2] },
       { input: [[]], output: [] },
       { input: [[-1, 0, 1]], output: [-1, 0, 1] }
     ],
@@ -348,7 +348,7 @@ print(count_pattern_matches("hello", "#?##?"))  # 1`
       { input: ["abcde", "*****"], output: 1 },
       { input: ["aeiou", "?????"], output: 1 },
       { input: ["hello", "???"], output: 0 },
-      { input: ["test", "##"], output: 2 }
+      { input: ["test", "##"], output: 1 }
     ],
     hints: [
       "Use sliding window of pattern length",
@@ -623,7 +623,7 @@ print(count_power_of_2_pairs([1, 3, 5, 7]))  # 3`
       { input: [[1, 3, 5, 7]], output: 3 },
       { input: [[1, 1]], output: 1 },  // 1+1=2
       { input: [[2, 2, 2]], output: 3 },  // all pairs sum to 4
-      { input: [[1, 2, 4, 8]], output: 3 }
+      { input: [[1, 2, 4, 8]], output: 0 }
     ],
     hints: [
       "Brute force O(n²) won't pass for n=10^5",
